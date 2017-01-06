@@ -24,6 +24,7 @@
   "homepage": "https://github.com/eenewbsauce/Office-Pool-Junkie#readme",
   "dependencies": {
     "cheerio": "^0.22.0",
+    "ramda": "^0.23.0",
     "request": "^2.79.0"
   }
 }
