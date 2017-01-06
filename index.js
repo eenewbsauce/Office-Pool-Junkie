@@ -12,4 +12,4 @@ auth.login()
     console.dir(res.pools);
   }, err => {
     console.log('error fetching pools');
-  })
+  });
