@@ -19,9 +19,7 @@ function standings() {
                 R.pluck('teamRecords')
             )(body.records);
 
-            resolve({
-                data: standings
-            });
+            resolve(standings);
         });
     });
 }

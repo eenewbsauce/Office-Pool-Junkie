@@ -1,6 +1,7 @@
-const auth  = require('./lib/auth')();
-const pages = require('./lib/pages')();
-const stats = require('./stats');
+const auth      = require('./scraping/auth')();
+const pages     = require('./scraping/pages')();
+const stats     = require('./stats');
+const compare   = require('./compare');
 
 // auth.login()
 //   .then(res => {
@@ -16,6 +17,10 @@ const stats = require('./stats');
 //   });
 
 stats.standings()
-  .then(res => {
-    console.dir(res.data, {depth: null});
+  .then(standings => {
+      let winner = compare.teams
+          .create(standings)
+          .aVsB(standings[0].team.name, standings[1].team.name);
+
+      console.log(winner.name);
   });
