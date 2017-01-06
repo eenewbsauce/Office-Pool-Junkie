@@ -1,0 +1,24 @@
+{
+  "name": "office-pool-junkie",
+  "version": "1.0.0",
+  "description": "A tool that enables users to automatically pick their teams in a NHL pick 'em pool",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/eenewbsauce/Office-Pool-Junkie.git"
+  },
+  "keywords": [
+    "office",
+    "pool",
+    "junkie"
+  ],
+  "author": "eenewbsauce",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/eenewbsauce/Office-Pool-Junkie/issues"
+  },
+  "homepage": "https://github.com/eenewbsauce/Office-Pool-Junkie#readme"
+}
