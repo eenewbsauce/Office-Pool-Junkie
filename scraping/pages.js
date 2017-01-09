@@ -2,6 +2,7 @@ const baseUrl       = 'https://www.officepooljunkie.com';
 const poolsEndpoint = `${baseUrl}/mypools.php`;
 const cheerio       = require('cheerio');
 const request       = require('request');
+const R             = require('ramda');
 
 const cookieJar     = require('./cookiejar');
 
@@ -21,13 +22,26 @@ class Pages {
 
         let $ = cheerio.load(body);
         let rows = $('.create tr');
+        let pools = [];
 
-        let pools = rows.map((i, el) => {
-            return cheerio(el).find('a.tooltip').attr('href');
+        rows.each((i, el) => {
+          let cells = cheerio(el).find('td');
+
+          pools.push({
+              link: cells.eq(0).find('a.tooltip').attr('href'),
+              week: parseInt(cells.eq(1).text().split(':')[0].split(' ')[1]) || undefined
+          });
         });
 
+        let cleanPools = R.compose(
+            R.sortWith([R.descend(R.prop('week'))]),
+            R.filter(p => {
+              return !R.isNil(p.week) && typeof p.week === 'number';
+            })
+        )(pools);
+
         resolve({
-          link: pools[1]
+          link: cleanPools[0].link
         });
       });
     });
@@ -48,13 +62,23 @@ class Pages {
 
             let $ = cheerio.load(body);
             let rows = $('.sheet tr');
+            let matchups = [];
 
-            let matchups = rows.map((i, el) => {
-                return cheerio(el).find('td').eq(3).text();
+            rows.each((i, el) => {
+              let cells = cheerio(el).find('td');
+              matchups.push({
+                away: cells.eq(3).text(),
+                home: cells.eq(6).text()
+              });
             });
 
+            let cleanMatchups = R.filter(m => {
+              console.log(m)
+              return !R.isEmpty(m.away) && !R.isEmpty(m.home);
+            }, matchups);
+
             resolve({
-              matchups: matchups
+              matchups: cleanMatchups
             });
         });
     });
