@@ -1,9 +1,18 @@
-const helper = require('./helpers');
-const R      = require('ramda');
+const helper    = require('./helpers');
+const R         = require('ramda');
+const Selection = require('./selection');
 
 class Teams {
     constructor(standings) {
         this.standings = standings;
+    }
+
+    getSelections(matchups) {
+        return matchups.map((m, i) => {
+            let winner = this.aVsB(m.home, m.away);
+
+            return new Selection(m, winner, i);
+        });
     }
 
     aVsB(nameA, nameB) {

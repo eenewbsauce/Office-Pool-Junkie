@@ -1,5 +1,7 @@
 const auth      = require('./scraping/auth')();
 const pages     = require('./scraping/pages')();
+const stats     = require('./stats');
+let standings;
 
 auth.login()
     .then(res => {
@@ -7,8 +9,15 @@ auth.login()
     }, err => {
         console.log('failed to login');
     })
-    .then(pages.listRead)
+    .then(stats.standings)
+    .then(data => {
+        standings = data;
+    })
+    .then(pages.listRead.bind(pages))
     .then(pages.poolRead)
     .then(data => {
-        console.log(data.matchups);
+        return pages.poolWrite(data.matchups, standings);
     })
+    .then(() => {
+        console.log('all done ; )');
+    });

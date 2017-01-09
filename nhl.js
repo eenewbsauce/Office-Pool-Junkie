@@ -5,7 +5,8 @@ stats.standings()
   .then(standings => {
       let winner = teams
           .create(standings)
-          .aVsB(standings[0].team.name, standings[1].team.name);
+          .getSelections();
+          // .aVsB(standings[0].team.name, standings[1].team.name);
 
       console.log(winner.name);
   });

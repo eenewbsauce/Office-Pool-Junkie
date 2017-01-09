@@ -1,4 +1,5 @@
 module.exports = {
     teams: require('./teams'),
-    helpers: require('./helpers')
+    helpers: require('./helpers'),
+    selection: require('./selection')
 };

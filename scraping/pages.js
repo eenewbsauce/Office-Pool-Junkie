@@ -1,14 +1,24 @@
-const baseUrl       = 'https://www.officepooljunkie.com';
-const poolsEndpoint = `${baseUrl}/mypools.php`;
-const cheerio       = require('cheerio');
-const request       = require('request');
-const R             = require('ramda');
+const baseUrl           = 'https://www.officepooljunkie.com';
+const poolsEndpoint     = `${baseUrl}/mypools.php`;
+const cheerio           = require('cheerio');
+const request           = require('request');
+const R                 = require('ramda');
 
-const cookieJar     = require('./cookiejar');
+const teams             = require('../compare/teams');
+const cookieJar         = require('./cookiejar');
 
 class Pages {
+  setPoolId(poolLink) {
+    this.poolId = poolLink.split('=')[1];
+  }
+
+  getPoolId() {
+    return this.poolId;
+  }
+
   listRead() {
     console.log('getting pools');
+    let self = this;
 
     return new Promise((resolve, reject) => {
       request({
@@ -40,6 +50,8 @@ class Pages {
             })
         )(pools);
 
+        self.setPoolId(cleanPools[0].link);
+
         resolve({
           link: cleanPools[0].link
         });
@@ -68,12 +80,15 @@ class Pages {
               let cells = cheerio(el).find('td');
               matchups.push({
                 away: cells.eq(3).text(),
-                home: cells.eq(6).text()
+                home: cells.eq(6).text(),
+                game: {
+                  name: cells.eq(0).find('input').attr('name'),
+                  value: cells.eq(0).find('input').attr('value')
+                }
               });
             });
 
             let cleanMatchups = R.filter(m => {
-              console.log(m)
               return !R.isEmpty(m.away) && !R.isEmpty(m.home);
             }, matchups);
 
@@ -82,6 +97,28 @@ class Pages {
             });
         });
     });
+  }
+
+  poolWrite(matchups, standings) {
+      console.log('making selections');
+
+      return new Promise((resolve, reject) => {
+          let selections = teams.create(standings).getSelections(matchups);
+
+          request({
+              url: `${baseUrl}/picks_pickem.php?Pool=${this.poolId}`,
+              method: 'POST',
+              jar: cookieJar.getCookie(),
+              form: selections
+          }, (err, res, body) => {
+            console.log('done');
+              if (err) {
+                  return reject(err);
+              }
+
+              resolve(body);
+          });
+      });
   }
 }
 
