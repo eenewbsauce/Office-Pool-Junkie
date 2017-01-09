@@ -1,5 +1,6 @@
 const helper = require('./helpers');
 const R      = require('ramda');
+
 class Teams {
     constructor(standings) {
         this.standings = standings;

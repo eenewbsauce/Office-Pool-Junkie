@@ -4,7 +4,7 @@
   "description": "A tool that enables users to automatically pick their teams in a NHL pick 'em pool",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node nhl.js",
     "test": "npm test"
   },
   "repository": {
