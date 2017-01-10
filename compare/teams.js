@@ -16,7 +16,7 @@ class Teams {
             selection.add(m, winner, i);
         });
 
-        return selection;
+        return selection.get();
     }
 
     aVsB(nameA, nameB) {

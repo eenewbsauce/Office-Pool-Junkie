@@ -8,8 +8,8 @@ const teams             = require('../compare/teams');
 const cookieJar         = require('./cookiejar');
 
 class Pages {
-  setPoolId(poolLink) {
-    this.poolId = poolLink.split('=')[1];
+  setPoolId(pool) {
+    this.poolId = pool.link.split('=')[1];
   }
 
   getPoolId() {
@@ -50,10 +50,11 @@ class Pages {
             })
         )(pools);
 
-        self.setPoolId(cleanPools[0].link);
+        self.setPoolId(cleanPools[0]);
 
         resolve({
-          link: cleanPools[0].link
+          link: cleanPools[0].link,
+          week: cleanPools[0].week
         });
       });
     });
@@ -95,7 +96,7 @@ class Pages {
             resolve({
               matchups: cleanMatchups,
               week: data.week,
-              h: cheerio('input[name="h"]').attr('vallue')
+              h: $('input[name="h"]').attr('value')
             });
         });
     });
@@ -113,7 +114,6 @@ class Pages {
               jar: cookieJar.getCookie(),
               form: selections
           }, (err, res, body) => {
-            console.log('done');
               if (err) {
                   return reject(err);
               }
