@@ -16,7 +16,7 @@ auth.login()
     .then(pages.listRead.bind(pages))
     .then(pages.poolRead)
     .then(data => {
-        return pages.poolWrite(data.matchups, standings);
+        return pages.poolWrite(data, standings);
     })
     .then(() => {
         console.log('all done ; )');

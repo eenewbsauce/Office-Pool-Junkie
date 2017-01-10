@@ -1,10 +1,24 @@
 const helper = require('./helpers');
 
 class Selection {
-    constructor(matchup, winner, i) {
+    constructor(data, poolId) {
+        this.list = {
+          Week: data.week,
+          Pool: poolId,
+          Gcount: data.matchups.length,
+          h: data.h,
+          submit_picks: 'Save and Apply'
+        };
+    }
+
+    add(matchup, winner, i) {
         let idx = i + 1;
-        this[matchup.game.name] = matchup.game.value;
-        this['Pick' + idx] = winner.abbreviation;
+        this.list[matchup.game.name] = matchup.game.value;
+        this.list['Pick' + idx] = winner.abbreviation;
+    }
+
+    get() {
+      return this.list;
     }
 }
 

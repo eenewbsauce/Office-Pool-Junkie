@@ -93,17 +93,19 @@ class Pages {
             }, matchups);
 
             resolve({
-              matchups: cleanMatchups
+              matchups: cleanMatchups,
+              week: data.week,
+              h: cheerio('input[name="h"]').attr('vallue')
             });
         });
     });
   }
 
-  poolWrite(matchups, standings) {
+  poolWrite(data, standings) {
       console.log('making selections');
 
       return new Promise((resolve, reject) => {
-          let selections = teams.create(standings).getSelections(matchups);
+          let selections = teams.create(standings).getSelections(data, this.getPoolId());
 
           request({
               url: `${baseUrl}/picks_pickem.php?Pool=${this.poolId}`,

@@ -7,12 +7,16 @@ class Teams {
         this.standings = standings;
     }
 
-    getSelections(matchups) {
-        return matchups.map((m, i) => {
+    getSelections(data, poolId) {
+        let selection = new Selection(data, poolId);
+
+        data.matchups.forEach((m, i) => {
             let winner = this.aVsB(m.home, m.away);
 
-            return new Selection(m, winner, i);
+            selection.add(m, winner, i);
         });
+
+        return selection;
     }
 
     aVsB(nameA, nameB) {
