@@ -9,9 +9,8 @@ class Teams {
 
     getSelections(data, poolId) {
         let selection = new Selection(data, poolId);
-
         data.matchups.forEach((m, i) => {
-            let winner = this.aVsB(m.home, m.away);
+            let winner = this.aVsB(m.home.abbv, m.away.abbv);
 
             selection.add(m, winner, i);
         });
@@ -19,13 +18,23 @@ class Teams {
         return selection.get();
     }
 
-    aVsB(nameA, nameB) {
-        let teamA = helper.findTeamInStandings(nameA, this.standings);
-        let teamB = helper.findTeamInStandings(nameB, this.standings);
+    aVsB(abbvA, abbvB) {
+        let teamA = helper.findTeamInStandings(abbvA, this.standings);
+        let teamB = helper.findTeamInStandings(abbvB, this.standings);
 
-        return R.sortWith([
-            R.descend(R.prop('points'))
-        ])([teamA, teamB])[0].team;
+        let compare = {
+          a: teamA,
+          aAdv: 0,
+          b: teamB,
+          bAdv: 0
+        };
+
+        helper.assignPointsAdv(compare);
+        helper.assignStreakAdv(compare);
+
+        return compare.aAdv > compare.bAdv
+          ? teamA.team
+          : teamB.team;
     }
 }
 

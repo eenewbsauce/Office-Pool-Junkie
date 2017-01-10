@@ -14,7 +14,9 @@ class Selection {
     add(matchup, winner, i) {
         let idx = i + 1;
         this.list[matchup.game.name] = matchup.game.value;
-        this.list['Pick' + idx] = winner.abbreviation;
+        this.list['Pick' + idx] = helper.abbvReverseMap.hasOwnProperty(winner.abbreviation)
+         ? helper.abbvReverseMap[winner.abbreviation]
+         : winner.abbreviation;
     }
 
     get() {

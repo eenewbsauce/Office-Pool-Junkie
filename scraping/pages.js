@@ -80,8 +80,14 @@ class Pages {
             rows.each((i, el) => {
               let cells = cheerio(el).find('td');
               matchups.push({
-                away: cells.eq(3).text(),
-                home: cells.eq(6).text(),
+                away: {
+                  name: cells.eq(3).text(),
+                  abbv: cells.eq(2).find('input').attr('value')
+                },
+                home: {
+                  name: cells.eq(6).text(),
+                  abbv: cells.eq(5).find('input').attr('value')
+                },
                 game: {
                   name: cells.eq(0).find('input').attr('name'),
                   value: cells.eq(0).find('input').attr('value')
@@ -90,7 +96,7 @@ class Pages {
             });
 
             let cleanMatchups = R.filter(m => {
-              return !R.isEmpty(m.away) && !R.isEmpty(m.home);
+              return !R.isEmpty(m.away.name) && !R.isEmpty(m.home.name);
             }, matchups);
 
             resolve({
