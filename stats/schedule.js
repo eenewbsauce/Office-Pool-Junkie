@@ -18,7 +18,6 @@ function schedule() {
             let schedule = R.compose(
                 // R.sortWith([R.descend(R.prop('points'))]),
                 function(data) {
-                    console.dir(data);
                     return data;
                 },
                 R.pluck('teams'),
