@@ -2,11 +2,17 @@ const stats     = require('./stats');
 const teams     = require('./compare').teams;
 
 stats.standings()
-  .then(standings => {
-      let winner = teams
-          .create(standings)
-          .getSelections();
-          // .aVsB(standings[0].team.name, standings[1].team.name);
-
-      console.log(winner.name);
-  });
+    .then(standings => {
+        console.log('**** standings');
+        console.dir(standings);
+    })
+    .then(stats.schedule)
+    .then(schedule => {
+        console.log('**** schedule');
+        console.dir(schedule);
+    })
+    .then(stats.teams)
+    .then(teams => {
+        console.log('**** teams');
+        console.dir(teams);
+    });

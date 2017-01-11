@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "standings": "node nhl.js",
     "test": "npm test"
   },
   "repository": {

@@ -1,7 +1,6 @@
 const request   = require('request');
 const R         = require('ramda');
 
-
 function standings() {
     return new Promise((resolve, reject) => {
         request({

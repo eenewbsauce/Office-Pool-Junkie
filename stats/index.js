@@ -1,3 +1,5 @@
 module.exports = {
-    standings: require('./standings')
-}
+    standings: require('./standings'),
+    schedule: require('./schedule'),
+    teams: require('./teams')
+};
