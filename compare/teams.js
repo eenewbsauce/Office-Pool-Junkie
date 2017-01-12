@@ -9,6 +9,7 @@ class Teams {
 
     getSelections(data, poolId) {
         let selection = new Selection(data, poolId);
+
         data.matchups.forEach((m, i) => {
             let winner = this.aVsB(m.home.abbv, m.away.abbv);
 

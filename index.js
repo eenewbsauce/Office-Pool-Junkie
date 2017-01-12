@@ -13,6 +13,8 @@ auth.login()
     .then(stats.get)
     .then(data => {
         statsStore = data;
+    }, err => {
+        console.log('error fetching stats');
     })
     .then(pages.listRead.bind(pages))
     .then(pages.poolRead)

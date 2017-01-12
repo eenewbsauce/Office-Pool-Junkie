@@ -3,9 +3,11 @@ const poolsEndpoint     = `${baseUrl}/mypools.php`;
 const cheerio           = require('cheerio');
 const request           = require('request');
 const R                 = require('ramda');
+const querystring       = require('querystring');
 
 const teams             = require('../compare/teams');
 const cookieJar         = require('./cookiejar');
+const userAgent         = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36';
 
 class Pages {
   setPoolId(pool) {
@@ -113,12 +115,26 @@ class Pages {
 
       return new Promise((resolve, reject) => {
           let selections = teams.create(standings).getSelections(data, this.getPoolId());
+          let formData = querystring.stringify(selections);
 
           request({
-              url: `${baseUrl}/picks_pickem.php?Pool=${this.poolId}`,
+              url: `${baseUrl}/picks_pickem.php`,
               method: 'POST',
+              headers: {
+                  'Content-Type': 'application/x-www-form-urlencoded',
+                  'Connection': 'Keep-Alive',
+                  'Host': 'www.officepooljunkie.com',
+                  'Origin': 'https://www.officepooljunkie.com',
+                  'Upgrade-Insecure-Requests': 1,
+                  'User-Agent': userAgent,
+                  'Cache-Control': 'no-cache',
+                  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+                  'Accept-encoding': 'gzip, deflate, br',
+                  'Accept-Language': 'en-US,en;q=0.8'
+              },
               jar: cookieJar.getCookie(),
-              form: selections
+              qs: {Pool: this.poolId},
+              formData: formData
           }, (err, res, body) => {
               if (err) {
                   return reject(err);
