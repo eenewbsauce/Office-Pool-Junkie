@@ -21,6 +21,7 @@ auth.login()
     .then(data => {
         return pages.poolWrite(data, statsStore.standings);
     })
-    .then(() => {
+    .then(selections => {
+        console.dir(selections);
         console.log('all done ; )');
     });

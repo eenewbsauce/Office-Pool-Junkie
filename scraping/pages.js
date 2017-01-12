@@ -140,7 +140,7 @@ class Pages {
                   return reject(err);
               }
 
-              resolve(body);
+              resolve(selections);
           });
       });
   }
