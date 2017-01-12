@@ -39,11 +39,10 @@ const abbvMap = {
   'MON': 'MTL'
 }
 
-const abbvReverseMap = R.map(key => {
-  return {
-    [abbvMap[key]]: key
-  }
-}, abbvMap);
+let abbvReverseMap = {};
+R.forEach(key => {
+    abbvReverseMap[abbvMap[key]] = key;
+}, R.keys(abbvMap));
 
 class Helper {
     constructor() {
