@@ -42,8 +42,9 @@ const abbvMap = {
 }
 
 const algorithmMap = {
-  latest: ['assignPointsAdv', 'assignStreakAdv']
-}
+    latest: ['assignWinsAdv'],
+    week1: ['assignPointsAdv', 'assignStreakAdv']
+};
 
 let abbvReverseMap = {};
 R.forEach(key => {
@@ -65,9 +66,6 @@ class Helper {
       let teamA = this.findTeamInStandings(abbvA);
       let teamB = this.findTeamInStandings(abbvB);
 
-      // console.dir(teamA);
-      // console.dir(teamB);
-
       let compare = {
         a: teamA,
         aAdv: 0,
@@ -75,11 +73,13 @@ class Helper {
         bAdv: 0
       };
 
+      this.compare = compare;
+
       this.algorithmSteps.forEach(step => {
-        this[step](compare);
+        this[step]
       });
 
-      return compare;
+      return this.compare;
     }
 
     findTeamInStandings(abbv) {
@@ -90,28 +90,40 @@ class Helper {
         return R.find(R.pathEq(['team', 'abbreviation'], abbv))(this.standings);
     }
 
-    assignPointsAdv(compare) {
-        let diff = compare.a.points - compare.b.points;
+    assignPointsAdv() {
+        let diff = this.compare.a.points - this.compare.b.points;
         let absDiff = Math.abs(diff);
 
         let points = R.find(b => {
           return absDiff >= b.min && absDiff <= b.max;
         })(standingsPointsAdvantageBuckets).points;
 
-        compare.aAdv += diff > 0 ? points : 0;
-        compare.bAdv += diff < 0 ? points : 0;
+        this.compare.aAdv += diff > 0 ? points : 0;
+        this.compare.bAdv += diff < 0 ? points : 0;
      }
 
-    assignStreakAdv(compare) {
-      let aStreak = compare.a.streak;
-      let bStreak = compare.b.streak;
+    assignWinsAdv() {
+        let diff = this.compare.a.wins - this.compare.b.wins;
+        let absDiff = Math.abs(diff);
+
+        let points = R.find(b => {
+            return absDiff >= b.min && absDiff <= b.max;
+        })(standingsPointsAdvantageBuckets).points;
+
+        this.compare.aAdv += diff > 0 ? points : 0;
+        this.compare.bAdv += diff < 0 ? points : 0;
+    }
+
+    assignStreakAdv() {
+      let aStreak = this.compare.a.streak;
+      let bStreak = this.compare.b.streak;
 
       if (aStreak.streakType === 'wins') {
-          compare.aAdv += (streakBonus + Math.floor(aStreak.streakNumber/streakDiffuser));
+          this.compare.aAdv += (streakBonus + Math.floor(aStreak.streakNumber/streakDiffuser));
       }
 
       if (bStreak.streakType === 'wins') {
-          compare.bAdv += (streakBonus + Math.floor(bStreak.streakNumber/streakDiffuser));
+          this.compare.bAdv += (streakBonus + Math.floor(bStreak.streakNumber/streakDiffuser));
       }
     }
 }

@@ -39,5 +39,7 @@ jspm_packages
 # Webstorm
 *.idea
 
-# Results File
-results.json
+# Results Files
+selectionData.json
+matchupsData.json
+statsData.json

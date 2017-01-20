@@ -110,27 +110,23 @@ class Pages {
     });
   }
 
-  poolWrite(data, standings, algorithm) {
+  poolWrite(data, standings, algorithm, submitResults) {
       console.log('making selections');
 
       return new Promise((resolve, reject) => {
           let selections = teams.create(standings, algorithm).getSelections(data, this.getPoolId());
-          return resolve(selections);
+
+          if (!submitResults) {
+              return resolve(selections);
+          }
 
           request({
               url: `${baseUrl}/picks_pickem.php`,
               method: 'POST',
               headers: {
-                  // 'Content-Type': 'application/x-www-form-urlencoded',
                   'Connection': 'keep-alive',
-                  // 'Host': 'www.officepooljunkie.com',
-                  // 'Origin': 'https://www.officepooljunkie.com',
-                  // 'Upgrade-Insecure-Requests': 1,
                   'User-Agent': userAgent,
                   'Cache-Control': 'no-cache',
-                  // 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                  // 'Accept-Encoding': 'gzip, deflate, br',
-                  // 'Accept-Language': 'en-US,en;q=0.8'
               },
               jar: cookieJar.getCookie(),
               qs: {Pool: this.poolId},

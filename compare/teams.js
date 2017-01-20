@@ -22,15 +22,7 @@ class Teams {
     }
 
     aVsB(abbvA, abbvB) {
-        // let teamA = helper.findTeamInStandings(abbvA, this.standings);
-        // let teamB = helper.findTeamInStandings(abbvB, this.standings);
-
-
-
-        // helper.assignPointsAdv(compare);
-        // helper.assignStreakAdv(compare);
-
-        let compare = this.helper.digest(abbvA, abbvB)
+        let compare = this.helper.digest(abbvA, abbvB);
 
         return compare.aAdv > compare.bAdv
           ? compare.a.team

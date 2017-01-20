@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
+    "populate": "node index.js --debug --shouldSaveMatchups --shouldSaveStats",
     "stats": "node nhl.js",
     "test": "npm test"
   },
@@ -25,6 +26,7 @@
   "homepage": "https://github.com/eenewbsauce/Office-Pool-Junkie#readme",
   "dependencies": {
     "cheerio": "^0.22.0",
+    "minimist": "^1.2.0",
     "ramda": "^0.23.0",
     "request": "^2.79.0"
   }
