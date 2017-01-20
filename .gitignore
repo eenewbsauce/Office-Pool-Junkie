@@ -39,3 +39,5 @@ jspm_packages
 # Webstorm
 *.idea
 
+# Results File
+results.json

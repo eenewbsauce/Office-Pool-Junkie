@@ -1,10 +1,12 @@
-const helper    = require('./helpers');
+const Helper    = require('./helpers');
 const R         = require('ramda');
 const Selection = require('./selection');
 
 class Teams {
-    constructor(standings) {
+    constructor(standings, algorithm) {
         this.standings = standings;
+        this.algorithm = algorithm;
+        this.helper = new Helper(algorithm, standings);
     }
 
     getSelections(data, poolId) {
@@ -20,27 +22,24 @@ class Teams {
     }
 
     aVsB(abbvA, abbvB) {
-        let teamA = helper.findTeamInStandings(abbvA, this.standings);
-        let teamB = helper.findTeamInStandings(abbvB, this.standings);
+        // let teamA = helper.findTeamInStandings(abbvA, this.standings);
+        // let teamB = helper.findTeamInStandings(abbvB, this.standings);
 
-        let compare = {
-          a: teamA,
-          aAdv: 0,
-          b: teamB,
-          bAdv: 0
-        };
 
-        helper.assignPointsAdv(compare);
-        helper.assignStreakAdv(compare);
+
+        // helper.assignPointsAdv(compare);
+        // helper.assignStreakAdv(compare);
+
+        let compare = this.helper.digest(abbvA, abbvB)
 
         return compare.aAdv > compare.bAdv
-          ? teamA.team
-          : teamB.team;
+          ? compare.a.team
+          : compare.b.team;
     }
 }
 
 module.exports = {
-    create: function(standings) {
-        return new Teams(standings);
+    create: function(standings, algorithm) {
+        return new Teams(standings, algorithm);
     }
 }

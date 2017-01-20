@@ -28,6 +28,8 @@ const standingsPointsAdvantageBuckets = [
     points: 4
   }
 ];
+
+//OPJ:NHL
 const abbvMap = {
   'WIN': 'WPG',
   'TB': 'TBL',
@@ -39,23 +41,53 @@ const abbvMap = {
   'MON': 'MTL'
 }
 
+const algorithmMap = {
+  latest: ['assignPointsAdv', 'assignStreakAdv']
+}
+
 let abbvReverseMap = {};
 R.forEach(key => {
     abbvReverseMap[abbvMap[key]] = key;
 }, R.keys(abbvMap));
 
 class Helper {
-    constructor() {
+    constructor(algorithm, standings) {
       this.abbvMap = abbvMap;
-      this.abbvReverseMap = abbvReverseMap;
+      this.algorithmSteps = algorithmMap[algorithm];
+      this.standings = standings;
     }
 
-    findTeamInStandings(abbv, standings) {
-        abbv = abbvMap.hasOwnProperty(abbv)
+    static abbvReverseMap() {
+      return abbvReverseMap;
+    }
+
+    digest(abbvA, abbvB) {
+      let teamA = this.findTeamInStandings(abbvA);
+      let teamB = this.findTeamInStandings(abbvB);
+
+      // console.dir(teamA);
+      // console.dir(teamB);
+
+      let compare = {
+        a: teamA,
+        aAdv: 0,
+        b: teamB,
+        bAdv: 0
+      };
+
+      this.algorithmSteps.forEach(step => {
+        this[step](compare);
+      });
+
+      return compare;
+    }
+
+    findTeamInStandings(abbv) {
+        abbv = this.abbvMap.hasOwnProperty(abbv)
           ? abbvMap[abbv]
           : abbv;
 
-        return R.find(R.pathEq(['team', 'abbreviation'], abbv))(standings);
+        return R.find(R.pathEq(['team', 'abbreviation'], abbv))(this.standings);
     }
 
     assignPointsAdv(compare) {
@@ -84,4 +116,4 @@ class Helper {
     }
 }
 
-module.exports = new Helper();
+module.exports = Helper;

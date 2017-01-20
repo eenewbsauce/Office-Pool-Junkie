@@ -1,4 +1,4 @@
-const helper = require('./helpers');
+const Helper = require('./helpers');
 
 class Selection {
     constructor(data, poolId) {
@@ -15,8 +15,8 @@ class Selection {
     add(matchup, winner, i) {
         let idx = i + 1;
         this.list[matchup.game.name] = parseInt(matchup.game.value);
-        this.list['Pick' + idx] = helper.abbvReverseMap.hasOwnProperty(winner.abbreviation)
-         ? helper.abbvReverseMap[winner.abbreviation]
+        this.list['Pick' + idx] = Helper.abbvReverseMap().hasOwnProperty(winner.abbreviation)
+         ? Helper.abbvReverseMap()[winner.abbreviation]
          : winner.abbreviation;
     }
 

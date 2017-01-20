@@ -110,12 +110,12 @@ class Pages {
     });
   }
 
-  poolWrite(data, standings) {
+  poolWrite(data, standings, algorithm) {
       console.log('making selections');
 
       return new Promise((resolve, reject) => {
-          let selections = teams.create(standings).getSelections(data, this.getPoolId());
-          let formData = querystring.stringify(selections).replace(/(%20)/g, '+');
+          let selections = teams.create(standings, algorithm).getSelections(data, this.getPoolId());
+          return resolve(selections);
 
           request({
               url: `${baseUrl}/picks_pickem.php`,
