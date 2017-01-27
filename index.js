@@ -3,7 +3,6 @@ const auth      = require('./scraping/auth')();
 const pages     = require('./scraping/pages')();
 const Stats     = require('./stats');
 const stats     = new Stats();
-
 const argv      = require('minimist')(process.argv.slice(2));
 const selectionAlgorithm = argv.algo || 'latest';
 const submitSelections = !!argv.submitSelections;
@@ -12,8 +11,6 @@ const shouldSaveSelections = !!argv.shouldSaveSelections;
 const shouldSaveStats = !!argv.shouldSaveStats;
 const useSavedMatchups = !!argv.useSavedMatchups;
 const useSavedStats = !!argv.useSavedStats;
-// console.dir(argv);
-// process.exit();
 
 let statsStore;
 let results;
