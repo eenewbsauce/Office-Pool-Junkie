@@ -114,10 +114,10 @@ class Pages {
       console.log(`making selections with algorith: ${algorithm}`);
 
       return new Promise((resolve, reject) => {
-          let selections = teams.create(stats.standings, algorithm).getSelections(data, this.getPoolId());
+          let selectionData = teams.create(stats.standings, algorithm).getSelections(data, this.getPoolId());
 
           if (!submitResults) {
-              return resolve(selections);
+              return resolve(selectionData);
           }
 
           request({
@@ -130,7 +130,7 @@ class Pages {
               },
               jar: cookieJar.getCookie(),
               qs: {Pool: this.poolId},
-              form: selections
+              form: selectionData.selections
           }, (err, res, body) => {
               if (err) {
                   return reject(err);
@@ -142,7 +142,7 @@ class Pages {
                   console.log(cheerio(el).html());
               });
 
-              resolve(selections);
+              resolve(selectionData);
           });
       });
   }

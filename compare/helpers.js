@@ -64,87 +64,89 @@ class Helper {
     }
 
     digest(abbvA, abbvB) {
-      let teamA = this.findTeamInStandings(abbvA);
-      let teamB = this.findTeamInStandings(abbvB);
+        let teamA = this.findTeamInStandings(abbvA);
+        let teamB = this.findTeamInStandings(abbvB);
 
-      let compare = {
-        a: teamA,
-        aAdv: 0,
-        b: teamB,
-        bAdv: 0
-      };
+        this.compare = {
+            a: teamA,
+            aAdvAudit: {},
+            aAdv: 0,
+            b: teamB,
+            bAdvAudit: {},
+            bAdv: 0
+        };
 
-      this.compare = compare;
-
-      this.algorithmSteps.forEach(step => {
+        this.algorithmSteps.forEach(step => {
         this[step]()
-      });
+        });
 
-      return this.compare;
-    }
+        this.compare.aAdv = R.reduce(R.add, 0, R.values(this.compare.aAdvAudit));
+        this.compare.bAdv = R.reduce(R.add, 0, R.values(this.compare.bAdvAudit));
 
-    findTeamInStandings(abbv) {
-        abbv = this.abbvMap.hasOwnProperty(abbv)
-          ? abbvMap[abbv]
-          : abbv;
-
-        return R.find(R.pathEq(['team', 'abbreviation'], abbv))(this.standings);
+        return this.compare;
     }
 
     assignPointsAdv() {
         let diff = this.compare.a.points - this.compare.b.points;
-        this.differentialHelper(diff, standingsPointsWinsAdvantageBuckets);
+        this.differentialHelper(diff, 'points', standingsPointsWinsAdvantageBuckets);
     }
 
     assignWinsAdv() {
         let diff = this.compare.a.leagueRecord.wins - this.compare.b.leagueRecord.wins;
-        this.differentialHelper(diff, standingsPointsWinsAdvantageBuckets);
+        this.differentialHelper(diff, 'wins', standingsPointsWinsAdvantageBuckets);
     }
 
     assignOTWinsAdv() {
         let diff = this.compare.a.leagueRecord.ot - this.compare.b.leagueRecord.ot;
-        this.differentialHelper(diff, standingsPointsWinsAdvantageBuckets);
-    }
-
-    assignHeadToHeadAdv() {
-        //use game data
-
+        this.differentialHelper(diff, 'ot', standingsPointsWinsAdvantageBuckets);
     }
 
     goalsForVsGoalsAgainst() {
         let teamAWinningPercentage = this.calculateWinningPercentage(this.compare.a);
         let teamBWinningPercentage = this.calculateWinningPercentage(this.compare.b);
 
-        this.compare.aAdv = teamAWinningPercentage > teamBWinningPercentage
+        this.compare.aAdvAudit['winningPercentage'] = teamAWinningPercentage > teamBWinningPercentage
             ? winningPercentageBonus
             : 0;
-        this.compare.bAdv = teamAWinningPercentage < teamBWinningPercentage
+        this.compare.bAdvAudit['winningPercentage'] = teamAWinningPercentage < teamBWinningPercentage
             ? winningPercentageBonus
             : 0;
     }
 
     assignStreakAdv() {
-      let aStreak = this.compare.a.streak;
-      let bStreak = this.compare.b.streak;
+        let aStreak = this.compare.a.streak;
+        let bStreak = this.compare.b.streak;
 
-      if (aStreak.streakType === 'wins') {
-          this.compare.aAdv += (streakBonus + Math.floor(aStreak.streakNumber/streakDiffuser));
-      }
+        if (aStreak.streakType === 'wins') {
+            this.compare.aAdv['streak'] = (streakBonus + Math.floor(aStreak.streakNumber/streakDiffuser));
+        }
 
-      if (bStreak.streakType === 'wins') {
-          this.compare.bAdv += (streakBonus + Math.floor(bStreak.streakNumber/streakDiffuser));
-      }
+        if (bStreak.streakType === 'wins') {
+            this.compare.bAdv['streak'] = (streakBonus + Math.floor(bStreak.streakNumber/streakDiffuser));
+        }
     }
 
-    differentialHelper(diff, bucket) {
+    assignHeadToHeadAdv() {
+        //use game data
+    }
+
+    findTeamInStandings(abbv) {
+        abbv = this.abbvMap.hasOwnProperty(abbv)
+            ? abbvMap[abbv]
+            : abbv;
+
+        return R.find(R.pathEq(['team', 'abbreviation'], abbv))(this.standings);
+    }
+
+    differentialHelper(diff, key, bucket) {
         let absDiff = Math.abs(diff);
 
         let points = R.find(b => {
             return absDiff >= b.min && absDiff <= b.max;
         })(bucket).points;
 
-        this.compare.aAdv += diff > 0 ? points : 0;
-        this.compare.bAdv += diff < 0 ? points : 0;
+        this.compare.aAdvAudit[key] = diff > 0 ? points : 0;
+        this.compare.bAdvAudit[key] = diff < 0 ? points : 0;
     }
 
     calculateWinningPercentage(teamData) {

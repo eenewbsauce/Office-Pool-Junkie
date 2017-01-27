@@ -13,20 +13,31 @@ class Teams {
         let selection = new Selection(data, poolId);
 
         data.matchups.forEach((m, i) => {
-            let winner = this.aVsB(m.home.abbv, m.away.abbv);
+            let aVsB = this.aVsB(m.home.abbv, m.away.abbv);
 
-            selection.add(m, winner, i);
+            selection.add(m, aVsB, i);
         });
 
-        return selection.get();
+        return {
+            selections: selection.get(),
+            seletionsWithCompares: selection.getWithCompares()
+        };
     }
 
     aVsB(abbvA, abbvB) {
         let compare = this.helper.digest(abbvA, abbvB);
 
-        return compare.aAdv > compare.bAdv
+        let winner = compare.aAdv > compare.bAdv
           ? compare.a.team
           : compare.b.team;
+
+        return {
+            winner: winner,
+            compare: {
+                a: compare.aAdvAudit,
+                b: compare.bAdvAudit
+            }
+        };
     }
 }
 

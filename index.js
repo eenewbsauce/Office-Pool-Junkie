@@ -44,16 +44,16 @@ if (useSavedMatchups && !useSavedStats) {
         .then(data => {
             return pages.poolWrite(matchupsData, statsStore, selectionAlgorithm, submitSelections);
         })
-        .then(selections => {
-            saveSelections(selections);
+        .then(selectionData => {
+            saveSelections(selectionData);
             console.log('all done ; )');
         });
 } else if (useSavedMatchups && useSavedStats) {
     console.log('using saved matchups and stats');
 
     pages.poolWrite(matchupsData, statsData, selectionAlgorithm, submitSelections)
-        .then(selections => {
-            saveSelections(selections);
+        .then(selectionData => {
+            saveSelections(selectionData);
             console.log('all done ; )');
         });
 } else {
@@ -77,18 +77,22 @@ if (useSavedMatchups && !useSavedStats) {
             saveMatchups(data);
             return pages.poolWrite(data, statsStore, selectionAlgorithm, submitSelections);
         })
-        .then(selections => {
-            saveSelections(selections);
+        .then(selectionData => {
+            saveSelections(selectionData);
             console.log('all done ; )');
         });
 }
 
-function saveSelections(selections) {
-    console.dir(selections);
+function saveSelections(selectionData) {
+    console.dir(selectionData.selections);
 
     if (shouldSaveSelections) {
         let isoDate = new Date().toISOString();
-        results[`${selectionAlgorithm}:${isoDate}`] = selections;
+        results[`${selectionAlgorithm}:${isoDate}`] = Object.assign(
+            {},
+            selectionData.selections,
+            selectionData.compare
+        );
         fs.writeFileSync('selectionData.json', JSON.stringify(results, null, 4));
     }
 }

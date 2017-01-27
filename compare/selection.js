@@ -2,6 +2,7 @@ const Helper = require('./helpers');
 
 class Selection {
     constructor(data, poolId) {
+        this.compareList = {};
         this.list = {};
         this.suffix = {
             Week: data.week,
@@ -12,22 +13,21 @@ class Selection {
         };
     }
 
-    add(matchup, winner, i) {
+    add(matchup, aVsB, i) {
         let idx = i + 1;
         this.list[matchup.game.name] = parseInt(matchup.game.value);
         this.list['Pick' + idx] = Helper.abbvReverseMap().hasOwnProperty(winner.abbreviation)
-         ? Helper.abbvReverseMap()[winner.abbreviation]
-         : winner.abbreviation;
+         ? Helper.abbvReverseMap()[aVsB.winner.abbreviation]
+         : aVsB.winner.abbreviation;
+         this.compareList[matchup.game.name] = aVsB.compare;
     }
 
     get() {
-        this.list.Gcount = this.suffix.Gcount;
-        this.list.Week = this.suffix.Week;
-        this.list.h = this.suffix.h;
-        this.list.Pool = this.suffix.Pool;
-        this.list.submit_picks = this.suffix.submit_picks;
+        return Object.assign({}, this.list, this.suffix);
+    }
 
-        return this.list;
+    getWithCompares() {
+        return this.compareList;
     }
 }
 
