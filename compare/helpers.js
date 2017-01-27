@@ -1,7 +1,7 @@
 const R = require('ramda');
 const streakBonus = 2;
 const streakDiffuser = 2;
-const standingsPointsAdvantageBuckets = [
+const standingsPointsWinsAdvantageBuckets = [
   {
     min: 0,
     max: 0,
@@ -96,7 +96,7 @@ class Helper {
 
         let points = R.find(b => {
           return absDiff >= b.min && absDiff <= b.max;
-        })(standingsPointsAdvantageBuckets).points;
+        })(standingsPointsWinsAdvantageBuckets).points;
 
         this.compare.aAdv += diff > 0 ? points : 0;
         this.compare.bAdv += diff < 0 ? points : 0;
@@ -108,7 +108,7 @@ class Helper {
 
         let points = R.find(b => {
             return absDiff >= b.min && absDiff <= b.max;
-        })(standingsPointsAdvantageBuckets).points;
+        })(standingsPointsWinsAdvantageBuckets).points;
 
         this.compare.aAdv += diff > 0 ? points : 0;
         this.compare.bAdv += diff < 0 ? points : 0;

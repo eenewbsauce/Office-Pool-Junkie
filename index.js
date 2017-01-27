@@ -12,24 +12,27 @@ const shouldSaveSelections = !!argv.shouldSaveSelections;
 const shouldSaveStats = !!argv.shouldSaveStats;
 const useSavedMatchups = !!argv.useSavedMatchups;
 const useSavedStats = !!argv.useSavedStats;
-
 // console.dir(argv);
 // process.exit();
 
 let statsStore;
 let results;
 let matchupsData;
+let statsData;
 
 try {
-  results = require('results.json');
   matchupsData = useSavedMatchups
-    ? require('matchupsData.json')
-    : [];
+    ? require('./matchupsData')
+    : {}
+  statsData = useSavedStats
+    ? require('./statsData')
+    : {};
+  results = require('./selectionData.json');
 } catch (err) {
   results = {};
 }
 
-if (useSavedMatchups) {
+if (useSavedMatchups && !useSavedStats) {
     console.log('using saved matchups');
 
     stats.get()
@@ -39,7 +42,7 @@ if (useSavedMatchups) {
             console.log('error fetching stats');
         })
         .then(data => {
-            return pages.poolWrite(matchupsData, statsStore.standings, selectionAlgorithm, submitSelections);
+            return pages.poolWrite(matchupsData, statsStore, selectionAlgorithm, submitSelections);
         })
         .then(selections => {
             saveSelections(selections);
@@ -48,7 +51,7 @@ if (useSavedMatchups) {
 } else if (useSavedMatchups && useSavedStats) {
     console.log('using saved matchups and stats');
 
-    pages.poolWrite(data, statsStore.standings, selectionAlgorithm, submitSelections)
+    pages.poolWrite(matchupsData, statsData, selectionAlgorithm, submitSelections)
         .then(selections => {
             saveSelections(selections);
             console.log('all done ; )');
@@ -72,7 +75,7 @@ if (useSavedMatchups) {
         .then(pages.poolRead)
         .then(data => {
             saveMatchups(data);
-            return pages.poolWrite(data, statsStore.standings, selectionAlgorithm, submitSelections);
+            return pages.poolWrite(data, statsStore, selectionAlgorithm, submitSelections);
         })
         .then(selections => {
             saveSelections(selections);

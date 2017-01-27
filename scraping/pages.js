@@ -110,11 +110,11 @@ class Pages {
     });
   }
 
-  poolWrite(data, standings, algorithm, submitResults) {
+  poolWrite(data, stats, algorithm, submitResults) {
       console.log('making selections');
 
       return new Promise((resolve, reject) => {
-          let selections = teams.create(standings, algorithm).getSelections(data, this.getPoolId());
+          let selections = teams.create(stats.standings, algorithm).getSelections(data, this.getPoolId());
 
           if (!submitResults) {
               return resolve(selections);
