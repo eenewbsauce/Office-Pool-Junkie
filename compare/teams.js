@@ -1,46 +1,58 @@
-const helper    = require('./helpers');
+const Helper    = require('./helpers');
 const R         = require('ramda');
 const Selection = require('./selection');
 
 class Teams {
-    constructor(standings) {
-        this.standings = standings;
+    constructor(stats, algorithm) {
+        this.stats = stats;
+        this.algorithm = algorithm;
+        this.helper = new Helper(algorithm, stats);
     }
 
     getSelections(data, poolId) {
         let selection = new Selection(data, poolId);
 
         data.matchups.forEach((m, i) => {
-            let winner = this.aVsB(m.home.abbv, m.away.abbv);
+            let aVsB = this.aVsB(m.home.abbv, m.away.abbv);
 
-            selection.add(m, winner, i);
+            selection.add(m, aVsB, i);
         });
 
-        return selection.get();
+        return {
+            selections: selection.get(),
+            selectionsWithCompares: selection.getWithCompares()
+        };
     }
 
     aVsB(abbvA, abbvB) {
-        let teamA = helper.findTeamInStandings(abbvA, this.standings);
-        let teamB = helper.findTeamInStandings(abbvB, this.standings);
+        let compare = this.helper.digest(abbvA, abbvB);
 
-        let compare = {
-          a: teamA,
-          aAdv: 0,
-          b: teamB,
-          bAdv: 0
+        let winner = compare.aAdv > compare.bAdv
+          ? compare.a.team
+          : compare.b.team;
+
+        return {
+            winner: winner,
+            compare: {
+                [compare.a.team.abbreviation]: Object.assign(
+                    {},
+                    compare.aAdvAudit,
+                    { awp: compare.aActualWinningPercentage },
+                    { cwp: compare.aCalculatedWinningPercentage }
+                ),
+                [compare.b.team.abbreviation]: Object.assign(
+                    {},
+                    compare.bAdvAudit,
+                    { awp: compare.bActualWinningPercentage },
+                    { cwp: compare.bCalculatedWinningPercentage }
+                ),
+            }
         };
-
-        helper.assignPointsAdv(compare);
-        helper.assignStreakAdv(compare);
-
-        return compare.aAdv > compare.bAdv
-          ? teamA.team
-          : teamB.team;
     }
 }
 
 module.exports = {
-    create: function(standings) {
-        return new Teams(standings);
+    create: function(stats, algorithm) {
+        return new Teams(stats, algorithm);
     }
 }

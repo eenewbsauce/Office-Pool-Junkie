@@ -4,7 +4,9 @@
   "description": "A tool that enables users to automatically pick their teams in a NHL pick 'em pool",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "start": "node index.js --submitSelections --shouldSaveSelections",
+    "populate": "node index.js --debug --shouldSaveMatchups --shouldSaveStats",
+    "useSaved": "node index.js --debug --useSavedMatchups --useSavedStats --shouldSaveSelections",
     "stats": "node nhl.js",
     "test": "npm test"
   },
@@ -25,6 +27,7 @@
   "homepage": "https://github.com/eenewbsauce/Office-Pool-Junkie#readme",
   "dependencies": {
     "cheerio": "^0.22.0",
+    "minimist": "^1.2.0",
     "ramda": "^0.23.0",
     "request": "^2.79.0"
   }

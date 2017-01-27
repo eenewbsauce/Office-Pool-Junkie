@@ -4,6 +4,8 @@ let teams = require('./teams');
 
 class Stats {
     get() {
+        console.log('fetching stats...');
+
         return Promise.all([
             standings(),
             schedule(),

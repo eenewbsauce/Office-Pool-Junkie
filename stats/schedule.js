@@ -3,8 +3,8 @@ const R         = require('ramda');
 
 function schedule() {
     return new Promise((resolve, reject) => {
-        let startDate = '2017-01-09';
-        let endDate = '2017-01-14';
+        let startDate = '2016-10-12';
+        let endDate = new Date().toISOString().split('T')[0];
 
         request({
             url: `https://statsapi.web.nhl.com/api/v1/schedule?startDate=${startDate}&endDate=${endDate}&expand=schedule.teams,schedule.linescore,schedule.broadcasts.all,schedule.ticket,schedule.game.content.media.epg,schedule.radioBroadcasts,schedule.game.seriesSummary,seriesSummary.series&leaderCategories=&leaderGameTypes=R&site=en_nhl&teamId=&gameType=&timecode=`,
@@ -16,7 +16,6 @@ function schedule() {
             }
 
             let schedule = R.compose(
-                // R.sortWith([R.descend(R.prop('points'))]),
                 function(data) {
                     return data;
                 },

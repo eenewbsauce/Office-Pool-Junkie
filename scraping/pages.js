@@ -110,43 +110,33 @@ class Pages {
     });
   }
 
-  poolWrite(data, standings) {
-      console.log('making selections');
+  poolWrite(data, stats, algorithm, submitResults) {
+      console.log(`making selections with algorithm: ${algorithm}`);
 
       return new Promise((resolve, reject) => {
-          let selections = teams.create(standings).getSelections(data, this.getPoolId());
-          let formData = querystring.stringify(selections).replace(/(%20)/g, '+');
+          let selectionData = teams.create(stats, algorithm).getSelections(data, this.getPoolId());
+
+          if (!submitResults) {
+              return resolve(selectionData);
+          }
 
           request({
               url: `${baseUrl}/picks_pickem.php`,
               method: 'POST',
               headers: {
-                  // 'Content-Type': 'application/x-www-form-urlencoded',
                   'Connection': 'keep-alive',
-                  // 'Host': 'www.officepooljunkie.com',
-                  // 'Origin': 'https://www.officepooljunkie.com',
-                  // 'Upgrade-Insecure-Requests': 1,
                   'User-Agent': userAgent,
                   'Cache-Control': 'no-cache',
-                  // 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                  // 'Accept-Encoding': 'gzip, deflate, br',
-                  // 'Accept-Language': 'en-US,en;q=0.8'
               },
               jar: cookieJar.getCookie(),
               qs: {Pool: this.poolId},
-              form: selections
+              form: selectionData.selections
           }, (err, res, body) => {
               if (err) {
                   return reject(err);
               }
 
-              let $ = cheerio.load(body);
-
-              $('.sheet tr').each((i, el) => {
-                  console.log(cheerio(el).html());
-              });
-
-              resolve(selections);
+              resolve(selectionData);
           });
       });
   }
