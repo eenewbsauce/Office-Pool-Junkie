@@ -1,6 +1,7 @@
 const R = require('ramda');
 const streakBonus = 2;
 const streakDiffuser = 2;
+const winningPercentageBonus = 2;
 const standingsPointsWinsAdvantageBuckets = [
   {
     min: 0,
@@ -42,7 +43,7 @@ const abbvMap = {
 }
 
 const algorithmMap = {
-    latest: ['assignWinsAdv', 'assignStreakAdv'],
+    latest: ['assignWinsAdv', 'assignStreakAdv', 'goalsForVsGoalsAgainst'],
     week1: ['assignPointsAdv', 'assignStreakAdv']
 };
 
@@ -102,26 +103,24 @@ class Helper {
 
     assignOTWinsAdv() {
         let diff = this.compare.a.leagueRecord.ot - this.compare.b.leagueRecord.ot;
-        this.differentialHelper(diff);
-    }
-
-    differentialHelper(diff, bucket) {
-        let absDiff = Math.abs(diff);
-
-        let points = R.find(b => {
-            return absDiff >= b.min && absDiff <= b.max;
-        })(bucket).points;
-
-        this.compare.aAdv += diff > 0 ? points : 0;
-        this.compare.bAdv += diff < 0 ? points : 0;
+        this.differentialHelper(diff, standingsPointsWinsAdvantageBuckets);
     }
 
     assignHeadToHeadAdv() {
+        //use game data
 
     }
 
     goalsForVsGoalsAgainst() {
+        let teamAWinningPercentage = this.calculateWinningPercentage(this.compare.a);
+        let teamBWinningPercentage = this.calculateWinningPercentage(this.compare.b);
 
+        this.compare.aAdv = teamAWinningPercentage > teamBWinningPercentage
+            ? winningPercentageBonus
+            : 0;
+        this.compare.bAdv = teamAWinningPercentage < teamBWinningPercentage
+            ? winningPercentageBonus
+            : 0;
     }
 
     assignStreakAdv() {
@@ -135,6 +134,22 @@ class Helper {
       if (bStreak.streakType === 'wins') {
           this.compare.bAdv += (streakBonus + Math.floor(bStreak.streakNumber/streakDiffuser));
       }
+    }
+
+    differentialHelper(diff, bucket) {
+        let absDiff = Math.abs(diff);
+
+        let points = R.find(b => {
+            return absDiff >= b.min && absDiff <= b.max;
+        })(bucket).points;
+
+        this.compare.aAdv += diff > 0 ? points : 0;
+        this.compare.bAdv += diff < 0 ? points : 0;
+    }
+
+    calculateWinningPercentage(teamData) {
+        return Math.pow(teamData.goalsScored, 2) /
+            (Math.pow(teamData.goalsScored, 2) + Math.pow(teamData.goalsAgainst, 2));
     }
 }
 
