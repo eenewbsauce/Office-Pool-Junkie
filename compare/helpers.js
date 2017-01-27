@@ -42,7 +42,7 @@ const abbvMap = {
 }
 
 const algorithmMap = {
-    latest: ['assignWinsAdv'],
+    latest: ['assignWinsAdv', 'assignStreakAdv'],
     week1: ['assignPointsAdv', 'assignStreakAdv']
 };
 
@@ -76,7 +76,7 @@ class Helper {
       this.compare = compare;
 
       this.algorithmSteps.forEach(step => {
-        this[step]
+        this[step]()
       });
 
       return this.compare;
@@ -92,26 +92,36 @@ class Helper {
 
     assignPointsAdv() {
         let diff = this.compare.a.points - this.compare.b.points;
-        let absDiff = Math.abs(diff);
-
-        let points = R.find(b => {
-          return absDiff >= b.min && absDiff <= b.max;
-        })(standingsPointsWinsAdvantageBuckets).points;
-
-        this.compare.aAdv += diff > 0 ? points : 0;
-        this.compare.bAdv += diff < 0 ? points : 0;
-     }
+        this.differentialHelper(diff, standingsPointsWinsAdvantageBuckets);
+    }
 
     assignWinsAdv() {
-        let diff = this.compare.a.wins - this.compare.b.wins;
+        let diff = this.compare.a.leagueRecord.wins - this.compare.b.leagueRecord.wins;
+        this.differentialHelper(diff, standingsPointsWinsAdvantageBuckets);
+    }
+
+    assignOTWinsAdv() {
+        let diff = this.compare.a.leagueRecord.ot - this.compare.b.leagueRecord.ot;
+        this.differentialHelper(diff);
+    }
+
+    differentialHelper(diff, bucket) {
         let absDiff = Math.abs(diff);
 
         let points = R.find(b => {
             return absDiff >= b.min && absDiff <= b.max;
-        })(standingsPointsWinsAdvantageBuckets).points;
+        })(bucket).points;
 
         this.compare.aAdv += diff > 0 ? points : 0;
         this.compare.bAdv += diff < 0 ? points : 0;
+    }
+
+    assignHeadToHeadAdv() {
+
+    }
+
+    goalsForVsGoalsAgainst() {
+
     }
 
     assignStreakAdv() {
