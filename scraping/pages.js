@@ -111,7 +111,7 @@ class Pages {
   }
 
   poolWrite(data, stats, algorithm, submitResults) {
-      console.log(`making selections with algorith: ${algorithm}`);
+      console.log(`making selections with algorithm: ${algorithm}`);
 
       return new Promise((resolve, reject) => {
           let selectionData = teams.create(stats.standings, algorithm).getSelections(data, this.getPoolId());

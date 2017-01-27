@@ -16,10 +16,10 @@ class Selection {
     add(matchup, aVsB, i) {
         let idx = i + 1;
         this.list[matchup.game.name] = parseInt(matchup.game.value);
-        this.list['Pick' + idx] = Helper.abbvReverseMap().hasOwnProperty(winner.abbreviation)
+        this.list['Pick' + idx] = Helper.abbvReverseMap().hasOwnProperty(aVsB.winner.abbreviation)
          ? Helper.abbvReverseMap()[aVsB.winner.abbreviation]
          : aVsB.winner.abbreviation;
-         this.compareList[matchup.game.name] = aVsB.compare;
+         this.compareList[`${matchup.game.name}Audit`] = aVsB.compare;
     }
 
     get() {

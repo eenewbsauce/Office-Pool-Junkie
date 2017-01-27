@@ -91,7 +91,7 @@ function saveSelections(selectionData) {
         results[`${selectionAlgorithm}:${isoDate}`] = Object.assign(
             {},
             selectionData.selections,
-            selectionData.compare
+            { compareAudit: selectionData.selectionsWithCompares }
         );
         fs.writeFileSync('selectionData.json', JSON.stringify(results, null, 4));
     }

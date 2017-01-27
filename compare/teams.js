@@ -20,7 +20,7 @@ class Teams {
 
         return {
             selections: selection.get(),
-            seletionsWithCompares: selection.getWithCompares()
+            selectionsWithCompares: selection.getWithCompares()
         };
     }
 
@@ -34,8 +34,8 @@ class Teams {
         return {
             winner: winner,
             compare: {
-                a: compare.aAdvAudit,
-                b: compare.bAdvAudit
+                [compare.a.team.abbreviation]: compare.aAdvAudit,
+                [compare.b.team.abbreviation]: compare.bAdvAudit
             }
         };
     }

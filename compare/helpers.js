@@ -44,6 +44,7 @@ const abbvMap = {
 
 const algorithmMap = {
     latest: ['assignWinsAdv', 'assignStreakAdv', 'goalsForVsGoalsAgainst'],
+    winper: ['goalsForVsGoalsAgainst'],
     week1: ['assignPointsAdv', 'assignStreakAdv']
 };
 
@@ -118,11 +119,11 @@ class Helper {
         let bStreak = this.compare.b.streak;
 
         if (aStreak.streakType === 'wins') {
-            this.compare.aAdv['streak'] = (streakBonus + Math.floor(aStreak.streakNumber/streakDiffuser));
+            this.compare.aAdvAudit['streak'] = (streakBonus + Math.floor(aStreak.streakNumber/streakDiffuser));
         }
 
         if (bStreak.streakType === 'wins') {
-            this.compare.bAdv['streak'] = (streakBonus + Math.floor(bStreak.streakNumber/streakDiffuser));
+            this.compare.bAdvAudit['streak'] = (streakBonus + Math.floor(bStreak.streakNumber/streakDiffuser));
         }
     }
 
