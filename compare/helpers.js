@@ -1,33 +1,35 @@
 const R = require('ramda');
-const streakBonus = 2;
+const streakBonus = 1;
 const streakDiffuser = 2;
-const winningPercentageBonus = 2;
-const standingsPointsWinsAdvantageBuckets = [
-  {
-    min: 0,
-    max: 0,
-    points: 0
-  },
-  {
-    min: 1,
-    max: 5,
-    points: 1
-  },
-  {
-    min: 6,
-    max: 10,
-    points: 2
-  },
-  {
-    min: 11,
-    max: 15,
-    points: 3
-  },
-  {
-    min: 16,
-    max: 1000,
-    points: 4
-  }
+const winningPercentageBonus = 1;
+const homeTeamBonus = 1;
+const headToHeadBonus = 1;
+const standardAdvantageBuckets = [
+    {
+        min: 0,
+        max: 0,
+        points: 0
+    },
+    {
+        min: 1,
+        max: 5,
+        points: 1
+    },
+    {
+        min: 6,
+        max: 10,
+        points: 2
+    },
+    {
+        min: 11,
+        max: 15,
+        points: 3
+    },
+    {
+        min: 16,
+        max: 1000,
+        points: 4
+    }
 ];
 
 //OPJ:NHL
@@ -40,24 +42,32 @@ const abbvMap = {
   'CLB': 'CBJ',
   'WAS': 'WSH',
   'MON': 'MTL'
-}
-
-const algorithmMap = {
-    latest: ['assignWinsAdv', 'assignStreakAdv', 'goalsForVsGoalsAgainst'],
-    winper: ['goalsForVsGoalsAgainst'],
-    week1: ['assignPointsAdv', 'assignStreakAdv']
 };
 
 let abbvReverseMap = {};
+
 R.forEach(key => {
     abbvReverseMap[abbvMap[key]] = key;
 }, R.keys(abbvMap));
 
+const algorithmMap = {
+    latest: [
+        'assignWinningPercentageAdv',
+        'assignGoalsForGoalsAgainstAdv',
+        'assignOTWinsAdv',
+        'assignHomeTeamAdv',
+        'assignHeadToHeadAdv',
+        'assignStreakAdv'
+    ],
+    week2: ['assignWinsAdv', 'assignStreakAdv'],
+    week1: ['assignPointsAdv', 'assignStreakAdv']
+};
+
 class Helper {
-    constructor(algorithm, standings) {
+    constructor(algorithm, stats) {
       this.abbvMap = abbvMap;
       this.algorithmSteps = algorithmMap[algorithm];
-      this.standings = standings;
+      this.stats = stats;
     }
 
     static abbvReverseMap() {
@@ -78,7 +88,7 @@ class Helper {
         };
 
         this.algorithmSteps.forEach(step => {
-        this[step]()
+            this[step]()
         });
 
         this.compare.aAdv = R.reduce(R.add, 0, R.values(this.compare.aAdvAudit));
@@ -89,29 +99,42 @@ class Helper {
 
     assignPointsAdv() {
         let diff = this.compare.a.points - this.compare.b.points;
-        this.differentialHelper(diff, 'points', standingsPointsWinsAdvantageBuckets);
+        this.differentialHelper(diff, 'points', standardAdvantageBuckets);
     }
 
-    assignWinsAdv() {
-        let diff = this.compare.a.leagueRecord.wins - this.compare.b.leagueRecord.wins;
-        this.differentialHelper(diff, 'wins', standingsPointsWinsAdvantageBuckets);
+    assignWinningPercentageAdv() {
+        let teamAWinningPercentage = this.compare.a.leagueRecord.wins/this.compare.a.gamesPlayed;
+        let teamBWinningPercentage = this.compare.b.leagueRecord.wins/this.compare.b.gamesPlayed;
+        let diff = teamAWinningPercentage - teamBWinningPercentage;
+
+        this.compare.aAdvAudit['winningPercentage'] = diff > 0
+            ? winningPercentageBonus
+            : 0;
+        this.compare.aActualWinningPercentage = `%${(teamAWinningPercentage * 100).toFixed(2)}`;
+        this.compare.bAdvAudit['winningPercentage'] = diff < 0
+            ? winningPercentageBonus
+            : 0;
+        this.compare.bActualWinningPercentage = `%${(teamBWinningPercentage * 100).toFixed(2)}`;
     }
 
     assignOTWinsAdv() {
         let diff = this.compare.a.leagueRecord.ot - this.compare.b.leagueRecord.ot;
-        this.differentialHelper(diff, 'ot', standingsPointsWinsAdvantageBuckets);
+        this.differentialHelper(diff, 'ot', standardAdvantageBuckets);
     }
 
-    goalsForVsGoalsAgainst() {
+    assignGoalsForGoalsAgainstAdv() {
         let teamAWinningPercentage = this.calculateWinningPercentage(this.compare.a);
         let teamBWinningPercentage = this.calculateWinningPercentage(this.compare.b);
+        let diff = teamAWinningPercentage - teamBWinningPercentage;
 
-        this.compare.aAdvAudit['winningPercentage'] = teamAWinningPercentage > teamBWinningPercentage
+        this.compare.aAdvAudit['calculatedWinPer'] = diff > 0
             ? winningPercentageBonus
             : 0;
-        this.compare.bAdvAudit['winningPercentage'] = teamAWinningPercentage < teamBWinningPercentage
+        this.compare.aCalculatedWinningPercentage = `%${(teamAWinningPercentage * 100).toFixed(2)}`;
+        this.compare.bAdvAudit['calculatedWinPer'] = diff < 0
             ? winningPercentageBonus
             : 0;
+        this.compare.bCalculatedWinningPercentage = `%${(teamBWinningPercentage * 100).toFixed(2)}`;
     }
 
     assignStreakAdv() {
@@ -120,15 +143,51 @@ class Helper {
 
         if (aStreak.streakType === 'wins') {
             this.compare.aAdvAudit['streak'] = (streakBonus + Math.floor(aStreak.streakNumber/streakDiffuser));
+        } else {
+            this.compare.aAdvAudit['streak'] = 0;
         }
 
         if (bStreak.streakType === 'wins') {
             this.compare.bAdvAudit['streak'] = (streakBonus + Math.floor(bStreak.streakNumber/streakDiffuser));
+        } else {
+            this.compare.bAdvAudit['streak'] = 0;
         }
     }
 
+    assignHomeTeamAdv() {
+        //teamA is the home team
+        this.compare.aAdvAudit['hometeam'] = homeTeamBonus;
+        this.compare.bAdvAudit['hometeam'] = 0;
+    }
+
     assignHeadToHeadAdv() {
-        //use game data
+        let headToHeadGames;
+
+        R.compose(
+            teamAWins => {
+                this.compare.aAdvAudit['headtohead'] = teamAWins.length > (headToHeadGames.length - teamAWins.length)
+                    ? headToHeadBonus
+                    : 0;
+
+                this.compare.bAdvAudit['headtohead'] = teamAWins.length < (headToHeadGames.length - teamAWins.length)
+                    ? headToHeadBonus
+                    : 0;
+            },
+            R.filter(game => {
+                return game.away.team.abbreviation === this.compare.a.team.abbreviation
+                    && game.away.score > game.home.score;
+            }),
+            schedule => {
+                headToHeadGames = R.filter(game => {
+                    return (game.away.team.abbreviation === this.compare.a.team.abbreviation
+                        && game.home.team.abbreviation === this.compare.b.team.abbreviation)
+                        || (game.away.team.abbreviation === this.compare.b.team.abbreviation
+                        && game.home.team.abbreviation === this.compare.a.team.abbreviation);
+                }, schedule);
+
+                return headToHeadGames;
+            }
+        )(this.stats.schedule);
     }
 
     findTeamInStandings(abbv) {
@@ -136,7 +195,7 @@ class Helper {
             ? abbvMap[abbv]
             : abbv;
 
-        return R.find(R.pathEq(['team', 'abbreviation'], abbv))(this.standings);
+        return R.find(R.pathEq(['team', 'abbreviation'], abbv))(this.stats.standings);
     }
 
     differentialHelper(diff, key, bucket) {

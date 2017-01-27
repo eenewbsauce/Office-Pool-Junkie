@@ -114,7 +114,7 @@ class Pages {
       console.log(`making selections with algorithm: ${algorithm}`);
 
       return new Promise((resolve, reject) => {
-          let selectionData = teams.create(stats.standings, algorithm).getSelections(data, this.getPoolId());
+          let selectionData = teams.create(stats, algorithm).getSelections(data, this.getPoolId());
 
           if (!submitResults) {
               return resolve(selectionData);
@@ -135,12 +135,6 @@ class Pages {
               if (err) {
                   return reject(err);
               }
-
-              let $ = cheerio.load(body);
-
-              $('.sheet tr').each((i, el) => {
-                  console.log(cheerio(el).html());
-              });
 
               resolve(selectionData);
           });

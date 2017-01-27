@@ -3,10 +3,10 @@ const R         = require('ramda');
 const Selection = require('./selection');
 
 class Teams {
-    constructor(standings, algorithm) {
-        this.standings = standings;
+    constructor(stats, algorithm) {
+        this.stats = stats;
         this.algorithm = algorithm;
-        this.helper = new Helper(algorithm, standings);
+        this.helper = new Helper(algorithm, stats);
     }
 
     getSelections(data, poolId) {
@@ -34,15 +34,25 @@ class Teams {
         return {
             winner: winner,
             compare: {
-                [compare.a.team.abbreviation]: compare.aAdvAudit,
-                [compare.b.team.abbreviation]: compare.bAdvAudit
+                [compare.a.team.abbreviation]: Object.assign(
+                    {},
+                    compare.aAdvAudit,
+                    { awp: compare.aActualWinningPercentage },
+                    { cwp: compare.aCalculatedWinningPercentage }
+                ),
+                [compare.b.team.abbreviation]: Object.assign(
+                    {},
+                    compare.bAdvAudit,
+                    { awp: compare.bActualWinningPercentage },
+                    { cwp: compare.bCalculatedWinningPercentage }
+                ),
             }
         };
     }
 }
 
 module.exports = {
-    create: function(standings, algorithm) {
-        return new Teams(standings, algorithm);
+    create: function(stats, algorithm) {
+        return new Teams(stats, algorithm);
     }
 }
