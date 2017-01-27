@@ -3,33 +3,27 @@ const auth      = require('./scraping/auth')();
 const pages     = require('./scraping/pages')();
 const Stats     = require('./stats');
 const stats     = new Stats();
-const argv      = require('minimist')(process.argv.slice(2));
-const selectionAlgorithm = argv.algo || 'latest';
-const submitSelections = !!argv.submitSelections;
-const shouldSaveMatchups = !!argv.shouldSaveMatchups;
-const shouldSaveSelections = !!argv.shouldSaveSelections;
-const shouldSaveStats = !!argv.shouldSaveStats;
-const useSavedMatchups = !!argv.useSavedMatchups;
-const useSavedStats = !!argv.useSavedStats;
-
+const options   = require('./options').parse();
 let statsStore;
 let results;
 let matchupsData;
 let statsData;
 
 try {
-  matchupsData = useSavedMatchups
+  matchupsData = options.useSavedMatchups
     ? require('./matchupsData')
-    : {}
-  statsData = useSavedStats
+    : {};
+  statsData = options.useSavedStats
     ? require('./statsData')
     : {};
   results = require('./selectionData.json');
 } catch (err) {
   results = {};
+  console.log('Cannot perform requested action. Please check node args.');
+  process.exit()
 }
 
-if (useSavedMatchups && !useSavedStats) {
+if (options.useSavedMatchups && !options.useSavedStats) {
     console.log('using saved matchups');
 
     stats.get()
@@ -39,16 +33,16 @@ if (useSavedMatchups && !useSavedStats) {
             console.log('error fetching stats');
         })
         .then(data => {
-            return pages.poolWrite(matchupsData, statsStore, selectionAlgorithm, submitSelections);
+            return pages.poolWrite(matchupsData, statsStore, options.selectionAlgorithm, options.submitSelections);
         })
         .then(selectionData => {
             saveSelections(selectionData);
             console.log('all done ; )');
         });
-} else if (useSavedMatchups && useSavedStats) {
+} else if (options.useSavedMatchups && options.useSavedStats) {
     console.log('using saved matchups and stats');
 
-    pages.poolWrite(matchupsData, statsData, selectionAlgorithm, submitSelections)
+    pages.poolWrite(matchupsData, statsData, options.selectionAlgorithm, options.submitSelections)
         .then(selectionData => {
             saveSelections(selectionData);
             console.log('all done ; )');
@@ -72,7 +66,7 @@ if (useSavedMatchups && !useSavedStats) {
         .then(pages.poolRead)
         .then(data => {
             saveMatchups(data);
-            return pages.poolWrite(data, statsStore, selectionAlgorithm, submitSelections);
+            return pages.poolWrite(data, statsStore, options.selectionAlgorithm, options.submitSelections);
         })
         .then(selectionData => {
             saveSelections(selectionData);
@@ -83,9 +77,9 @@ if (useSavedMatchups && !useSavedStats) {
 function saveSelections(selectionData) {
     console.dir(selectionData.selections);
 
-    if (shouldSaveSelections) {
+    if (options.shouldSaveSelections) {
         let isoDate = new Date().toISOString();
-        results[`${selectionAlgorithm}:${isoDate}`] = Object.assign(
+        results[`${options.selectionAlgorithm}:${isoDate}`] = Object.assign(
             {},
             selectionData.selections,
             { compareAudit: selectionData.selectionsWithCompares }
@@ -95,7 +89,7 @@ function saveSelections(selectionData) {
 }
 
 function saveMatchups(matchups) {
-    if (shouldSaveMatchups) {
+    if (options.shouldSaveMatchups) {
         fs.writeFileSync('matchupsData.json', JSON.stringify(matchups, null, 4));
     }
 }
@@ -103,7 +97,7 @@ function saveMatchups(matchups) {
 function saveStats(stats) {
     statsStore = stats;
 
-    if (shouldSaveStats) {
+    if (options.shouldSaveStats) {
         fs.writeFileSync('statsData.json', JSON.stringify(stats, null, 4));
     }
 }
