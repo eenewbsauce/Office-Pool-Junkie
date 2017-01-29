@@ -12,6 +12,8 @@ class Stats {
             teams()
         ])
             .then(results => {
+                console.log('stats fetching complete!');
+                
                 return {
                     standings: results[0],
                     schedule: results[1],

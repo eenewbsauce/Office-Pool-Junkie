@@ -8,6 +8,7 @@ const querystring       = require('querystring');
 const teams             = require('../compare/teams');
 const cookieJar         = require('./cookiejar');
 const userAgent         = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36';
+const options           = require('../options').parse();
 
 class Pages {
   setPoolId(pool) {
@@ -111,10 +112,15 @@ class Pages {
   }
 
   poolWrite(data, stats, algorithm, submitResults) {
-      console.log(`making selections with algorithm: ${algorithm}`);
-
       return new Promise((resolve, reject) => {
-          let selectionData = teams.create(stats, algorithm).getSelections(data, this.getPoolId());
+          let selectionData;
+
+          if (options.shouldSaveSelections) {
+            console.log(`making selections with algorithm: ${algorithm}`);
+            selectionData = teams.create(stats, algorithm).getSelections(data, this.getPoolId());
+          } else {
+            resolve();
+          }
 
           if (!submitResults) {
               return resolve(selectionData);

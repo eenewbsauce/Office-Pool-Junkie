@@ -1,37 +1,39 @@
 const fs = require('fs');
+const path = require('path');
 const options = require('../options').parse();
 
 class Matchups {
   static get() {
-    return options.useSavedMatchups
-      ? require('./store/matchupsData')
-      : {};
+    try {
+      return require('./store/matchupsData');
+    } catch(err) {
+      throw new Error('Matchups do not exist. Try "NPM run populate" first');
+    }
   }
 
   static set(matchups) {
-    return options.shouldSaveMatchups
-      ? fs.writeFileSync(
-          './store/matchupsData.json',
-          JSON.stringify(matchups, null, 4)
-        )
-      : {};
+    if (options.shouldSaveMatchups) {
+      return fs.writeFileSync(
+        path.resolve(__dirname, 'store/matchupsData.json'),
+        JSON.stringify(matchups, null, 4)
+      );
+    }
   }
 }
 
 class Stats {
   static get() {
-    return options.useSavedStats
-      ? fs.writeFileSync(
-          'statsData.json',
-          JSON.stringify(stats, null, 4)
-        )
-      : {};
+    try {
+      return require('./store/statsData');
+    } catch(err) {
+      throw new Error('Stats do not exist. Try "NPM run populate" first');
+    }
   }
 
-  static set() {
+  static set(stats) {
     if (options.shouldSaveStats) {
       fs.writeFileSync(
-        './store/statsData.json',
+        path.resolve(__dirname, 'store/statsData.json'),
         JSON.stringify(stats, null, 4)
       );
     }
@@ -39,17 +41,25 @@ class Stats {
 }
 
 class Selections {
-  // constructor() {
-  //   this.selections = options.shouldSaveSelections
-  //     ? require('./store/selectionData')
-  //     : {};
-  // }
-
-  static get() {
-
+  constructor() {
+    try {
+      this.selections = fs.readFileSync(
+        path.resolve(__dirname, 'store/selectionData.json')
+      );
+    } catch (err) {
+      this.selections = {};
+    }
   }
 
-  static set(selectionData) {
+  get() {
+    return this.selections || {};
+  }
+
+  set(selectionData) {
+    if (selectionData) {
+      console.dir(selectionData, {depth:null});
+    }
+
     if (options.shouldSaveSelections) {
       let isoDate = new Date().toISOString();
 
@@ -60,8 +70,8 @@ class Selections {
       );
 
       fs.writeFileSync(
-        './store/selectionData.json',
-        JSON.stringify(results, null, 4)
+        path.resolve(__dirname, 'store/selectionData.json'),
+        JSON.stringify(this.selections, null, 4)
       );
     }
   }
