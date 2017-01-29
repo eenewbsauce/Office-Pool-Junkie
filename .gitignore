@@ -40,6 +40,4 @@ jspm_packages
 *.idea
 
 # Results Files
-selectionData.json
-matchupsData.json
-statsData.json
+data/store/*

@@ -3,7 +3,7 @@ let schedule = require('./schedule');
 let teams = require('./teams');
 
 class Stats {
-    get() {
+    static get() {
         console.log('fetching stats...');
 
         return Promise.all([
@@ -12,6 +12,8 @@ class Stats {
             teams()
         ])
             .then(results => {
+                console.log('stats fetching complete!');
+                
                 return {
                     standings: results[0],
                     schedule: results[1],
