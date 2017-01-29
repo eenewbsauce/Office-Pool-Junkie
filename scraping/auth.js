@@ -23,7 +23,7 @@ class Auth {
 
         cookieJar.setCookie(res.headers['set-cookie'][0]);
 
-        resolve({message: 'yay'});
+        resolve({message: 'logged in!'});
       });
     });
   };

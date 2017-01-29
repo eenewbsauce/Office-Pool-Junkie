@@ -3,7 +3,7 @@ let schedule = require('./schedule');
 let teams = require('./teams');
 
 class Stats {
-    get() {
+    static get() {
         console.log('fetching stats...');
 
         return Promise.all([
