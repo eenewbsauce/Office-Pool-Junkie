@@ -3,8 +3,14 @@ let schedule = require('./schedule');
 let teams = require('./teams');
 
 class Stats {
-    static get() {
+    static get(useSaved = false) {
         console.log('fetching stats...');
+
+        if (useSaved) {
+          console.log('stats fetching complete!');
+          
+          return Promise.resolve(require('../data/store/statsData'));
+        }
 
         return Promise.all([
             standings(),
@@ -13,7 +19,7 @@ class Stats {
         ])
             .then(results => {
                 console.log('stats fetching complete!');
-                
+
                 return {
                     standings: results[0],
                     schedule: results[1],

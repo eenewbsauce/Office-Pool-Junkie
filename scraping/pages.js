@@ -5,7 +5,7 @@ const request           = require('request');
 const R                 = require('ramda');
 const querystring       = require('querystring');
 
-const teams             = require('../compare/teams');
+const teams             = require('../compare').teams;
 const cookieJar         = require('./cookiejar');
 const userAgent         = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/55.0.2883.95 Safari/537.36';
 const options           = require('../options').parse();
