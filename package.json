@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js --submitSelections --shouldSaveSelections",
-    "populate": "node index.js --debug --shouldSaveMatchups --shouldSaveStats",
-    "useSaved": "node index.js --debug --useSavedMatchups --useSavedStats --shouldSaveSelections",
-    "stats": "node nhl.js",
+    "populate": "node index.js --shouldSaveMatchups --shouldSaveStats",
+    "useSaved": "node index.js --useSavedMatchups --useSavedStats --shouldSaveSelections",
+    "backtest": "node backtest --useSavedStats",
     "test": "npm test"
   },
   "repository": {

@@ -9,8 +9,10 @@ class Teams {
         this.helper = new Helper(algorithm, stats);
     }
 
-    getSelections(data, poolId) {
-        let selection = new Selection(data, poolId);
+    getSelections(data, poolId, crossRefToWinners = false) {
+        let selection = new Selection(data, poolId, crossRefToWinners);
+
+        console.log(`Making selections with ${this.algorithm}`)
 
         data.matchups.forEach((m, i) => {
             let aVsB = this.aVsB(m.home.abbv, m.away.abbv);
