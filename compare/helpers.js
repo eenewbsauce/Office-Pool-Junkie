@@ -1,6 +1,6 @@
 const R = require('ramda');
 const streakBonus = 1;
-const streakDiffuser = 2;
+const streakDiffuser = 3;
 const winningPercentageBonus = 2;
 const homeTeamBonus = 1;
 const headToHeadBonus = 1;
@@ -59,7 +59,13 @@ const algorithmMap = {
         'assignHeadToHeadAdv',
         'assignStreakAdv'
     ],
-    week2: ['assignWinsAdv', 'assignStreakAdv'],
+    backtester: [
+        'assignWinningPercentageAdv',
+        'assignGoalsForGoalsAgainstAdv',
+        'assignHeadToHeadAdv',
+        'assignHomeTeamAdv'
+    ],
+    week2: ['assignWinningPercentageAdv', 'assignStreakAdv'],
     week1: ['assignPointsAdv', 'assignStreakAdv']
 };
 
