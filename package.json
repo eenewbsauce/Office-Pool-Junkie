@@ -8,7 +8,8 @@
     "populate": "node index.js --shouldSaveMatchups --shouldSaveStats",
     "useSaved": "node index.js --useSavedMatchups --useSavedStats --shouldSaveSelections",
     "backtest": "node backtest --useSavedStats",
-    "test": "npm test"
+    "test": "npm test",
+    "postinstall": "mkdir -p ./data/store"
   },
   "repository": {
     "type": "git",

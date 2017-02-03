@@ -49,13 +49,22 @@ Stats.get(options.useSavedStats)
 
     }, matchups);
 
-    let selections = teams.create(statsStore, options.selectionAlgorithm)
-      .getSelections({ matchups: matchups }, uuid(), true)
+    let chunkSize = options.chunkSize || matchups.length;
 
-    console.log(selections.selections.percentageSelectionToWins)
+    for (let i = 0; i < Math.floor(matchups.length/chunkSize); i++) {
+        let beginning = i * chunkSize;
+        let ending = (i + 1) * chunkSize;
+        let selections = teams.create(statsStore, options.selectionAlgorithm)
+            .getSelections({ matchups: matchups.slice(beginning, ending) }, uuid(), true);
 
-    fs.writeFileSync(
-      path.resolve(__dirname, 'data/store/backtestData.json'),
-      JSON.stringify(selections, null, 4)
-    );
-  })
+        console.log(`For ${beginning}-${ending}: ${selections.selections.percentageSelectionToWins}`);
+
+
+        if (i === 0) {
+            fs.writeFileSync(
+                path.resolve(__dirname, 'data/store/backtestData.json'),
+                JSON.stringify(selections, null, 4)
+            );
+        }
+    }
+  });

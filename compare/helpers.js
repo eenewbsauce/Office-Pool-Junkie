@@ -4,6 +4,10 @@ const streakDiffuser = 3;
 const winningPercentageBonus = 2;
 const homeTeamBonus = 1;
 const headToHeadBonus = 1;
+const pkBonus = 1;
+const ppBonus = 1.5;
+const shootOutBonus = 2.25;
+const faceoffBonus = 0.05;
 const standardAdvantageBuckets = [
     {
         min: 0,
@@ -13,22 +17,22 @@ const standardAdvantageBuckets = [
     {
         min: 1,
         max: 5,
-        points: 1
+        points: 0.5
     },
     {
         min: 6,
         max: 10,
-        points: 2
+        points: 1
     },
     {
         min: 11,
         max: 15,
-        points: 3
+        points: 1.5
     },
     {
         min: 16,
         max: 1000,
-        points: 4
+        points: 2
     }
 ];
 
@@ -57,13 +61,21 @@ const algorithmMap = {
         'assignOTWinsAdv',
         'assignHomeTeamAdv',
         'assignHeadToHeadAdv',
-        'assignStreakAdv'
+        'assignStreakAdv',
+        'assignPenaltyKillAdv',
+        'assignPowerPlayAdv',
+        'assignShootOutAdv'
     ],
     backtester: [
         'assignWinningPercentageAdv',
         'assignGoalsForGoalsAgainstAdv',
+        'assignOTWinsAdv',
+        'assignHomeTeamAdv',
         'assignHeadToHeadAdv',
-        'assignHomeTeamAdv'
+        'assignStreakAdv',
+        'assignPenaltyKillAdv',
+        'assignPowerPlayAdv',
+        'assignShootOutAdv'
     ],
     week2: ['assignWinningPercentageAdv', 'assignStreakAdv'],
     week1: ['assignPointsAdv', 'assignStreakAdv']
@@ -83,12 +95,16 @@ class Helper {
     digest(abbvA, abbvB) {
         let teamA = this.findTeamInStandings(abbvA);
         let teamB = this.findTeamInStandings(abbvB);
+        let teamAFullStats = this.findTeamStats(abbvA);
+        let teamBFullStats = this.findTeamStats(abbvB);
 
         this.compare = {
             a: teamA,
+            aFullStats: teamAFullStats,
             aAdvAudit: {},
             aAdv: 0,
             b: teamB,
+            bFullStats: teamBFullStats,
             bAdvAudit: {},
             bAdv: 0
         };
@@ -196,6 +212,50 @@ class Helper {
         )(this.stats.schedule);
     }
 
+    assignPenaltyKillAdv() {
+        let diff = this.compare.aFullStats.pkPctg - this.compare.bFullStats.pkPctg;
+
+        this.compare.aAdvAudit['pk'] = diff > 0
+            ? pkBonus
+            : 0;
+        this.compare.bAdvAudit['pk'] = diff < 0
+            ? pkBonus
+            : 0;
+    }
+
+    assignPowerPlayAdv() {
+        let diff = this.compare.aFullStats.ppPctg - this.compare.bFullStats.ppPctg;
+
+        this.compare.aAdvAudit['pp'] = diff > 0
+            ? ppBonus
+            : 0;
+        this.compare.bAdvAudit['pp'] = diff < 0
+            ? ppBonus
+            : 0;
+    }
+
+    assignShootOutAdv(){
+        let diff = this.compare.aFullStats.shootoutGamesWon - this.compare.bFullStats.shootoutGamesWon;
+
+        this.compare.aAdvAudit['shootout'] = diff > 0
+            ? shootOutBonus
+            : 0;
+        this.compare.bAdvAudit['shootout'] = diff < 0
+            ? shootOutBonus
+            : 0;
+    }
+
+    assignFaceoffWinPctAdv() {
+        let diff = this.compare.aFullStats.faceoffWinPctg - this.compare.bFullStats.faceoffWinPctg;
+
+        this.compare.aAdvAudit['faceoff'] = diff > 0
+            ? faceoffBonus
+            : 0;
+        this.compare.bAdvAudit['faceoff'] = diff < 0
+            ? faceoffBonus
+            : 0;
+    }
+
     findTeamInStandings(abbv) {
         abbv = this.abbvMap.hasOwnProperty(abbv)
             ? abbvMap[abbv]
@@ -218,6 +278,14 @@ class Helper {
     calculateWinningPercentage(teamData) {
         return Math.pow(teamData.goalsScored, 2) /
             (Math.pow(teamData.goalsScored, 2) + Math.pow(teamData.goalsAgainst, 2));
+    }
+
+    findTeamStats(abbv) {
+        abbv = this.abbvMap.hasOwnProperty(abbv)
+            ? abbvMap[abbv]
+            : abbv;
+
+        return this.stats.teams[abbv];
     }
 }
 

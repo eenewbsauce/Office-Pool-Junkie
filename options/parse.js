@@ -8,6 +8,7 @@ module.exports = function() {
         shouldSaveSelections: !!argv.shouldSaveSelections,
         shouldSaveStats: !!argv.shouldSaveStats,
         useSavedMatchups: !!argv.useSavedMatchups,
-        useSavedStats: !!argv.useSavedStats
+        useSavedStats: !!argv.useSavedStats,
+        chunkSize: argv.chunkSize
     };
 }
