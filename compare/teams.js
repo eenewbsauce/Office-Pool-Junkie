@@ -40,13 +40,15 @@ class Teams {
                     {},
                     compare.aAdvAudit,
                     { awp: compare.aActualWinningPercentage },
-                    { cwp: compare.aCalculatedWinningPercentage }
+                    { cwp: compare.aCalculatedWinningPercentage },
+                    { cwpReg: compare.aCalculatedWinningPercentageReg }
                 ),
                 [compare.b.team.abbreviation]: Object.assign(
                     {},
                     compare.bAdvAudit,
                     { awp: compare.bActualWinningPercentage },
-                    { cwp: compare.bCalculatedWinningPercentage }
+                    { cwp: compare.bCalculatedWinningPercentage },
+                    { cwpReg: compare.bCalculatedWinningPercentageReg }
                 ),
             }
         };

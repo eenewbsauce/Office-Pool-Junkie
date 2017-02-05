@@ -9,6 +9,7 @@ module.exports = function() {
         shouldSaveStats: !!argv.shouldSaveStats,
         useSavedMatchups: !!argv.useSavedMatchups,
         useSavedStats: !!argv.useSavedStats,
-        chunkSize: argv.chunkSize
+        chunkSize: argv.chunkSize,
+        sliceIndex: (argv.numGames) || 0
     };
 }

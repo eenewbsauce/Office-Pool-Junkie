@@ -41,6 +41,7 @@ Stats.get(options.useSavedStats)
       }
     }, statsStore.schedule);
 
+
     matchups = R.filter(m => {
       return (m.away.abbv !== 'PAC' && m.home.abbv !== 'PAC')
         && (m.away.abbv !== 'ATL' && m.home.abbv !== 'ATL')
@@ -49,16 +50,19 @@ Stats.get(options.useSavedStats)
 
     }, matchups);
 
+    if (options.sliceIndex) {
+        matchups = matchups.slice(matchups.length - options.sliceIndex - 4, matchups.length - 3);
+    }
+
     let chunkSize = options.chunkSize || matchups.length;
 
     for (let i = 0; i < Math.floor(matchups.length/chunkSize); i++) {
-        let beginning = i * chunkSize;
+        let beginning = (i * chunkSize) === 0 ? 1 : (i * chunkSize);
         let ending = (i + 1) * chunkSize;
         let selections = teams.create(statsStore, options.selectionAlgorithm)
-            .getSelections({ matchups: matchups.slice(beginning, ending) }, uuid(), true);
+            .getSelections({matchups: matchups.slice(beginning, ending)}, uuid(), true);
 
         console.log(`For ${beginning}-${ending}: ${selections.selections.percentageSelectionToWins}`);
-
 
         if (i === 0) {
             fs.writeFileSync(

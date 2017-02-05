@@ -1,13 +1,13 @@
 const R = require('ramda');
 const streakBonus = 1;
-const streakDiffuser = 3;
-const winningPercentageBonus = 2;
+const streakDiffuser = 2;
+const winningPercentageBonus = 2.5;
 const homeTeamBonus = 1;
 const headToHeadBonus = 1;
 const pkBonus = 1;
 const ppBonus = 1.5;
 const shootOutBonus = 2.25;
-const faceoffBonus = 0.05;
+const faceoffBonus = 0.1;
 const standardAdvantageBuckets = [
     {
         min: 0,
@@ -58,6 +58,7 @@ const algorithmMap = {
     latest: [
         'assignWinningPercentageAdv',
         'assignGoalsForGoalsAgainstAdv',
+        'assignGoalsForPerGameGoalsAgainstPerGameAdv',
         'assignOTWinsAdv',
         'assignHomeTeamAdv',
         'assignHeadToHeadAdv',
@@ -69,13 +70,7 @@ const algorithmMap = {
     backtester: [
         'assignWinningPercentageAdv',
         'assignGoalsForGoalsAgainstAdv',
-        'assignOTWinsAdv',
-        'assignHomeTeamAdv',
-        'assignHeadToHeadAdv',
-        'assignStreakAdv',
-        'assignPenaltyKillAdv',
-        'assignPowerPlayAdv',
-        'assignShootOutAdv'
+        'assignGoalsForPerGameGoalsAgainstPerGameAdv',
     ],
     week2: ['assignWinningPercentageAdv', 'assignStreakAdv'],
     week1: ['assignPointsAdv', 'assignStreakAdv']
@@ -157,6 +152,21 @@ class Helper {
             ? winningPercentageBonus
             : 0;
         this.compare.bCalculatedWinningPercentage = `%${(teamBWinningPercentage * 100).toFixed(2)}`;
+    }
+
+    assignGoalsForPerGameGoalsAgainstPerGameAdv() {
+        let teamAWinningPercentage = this.calculateWinningPercentageViaRegression(this.compare.a);
+        let teamBWinningPercentage = this.calculateWinningPercentageViaRegression(this.compare.b);
+        let diff = teamAWinningPercentage - teamBWinningPercentage;
+
+        this.compare.aAdvAudit['calculatedWinPerReg'] = diff > 0
+            ? winningPercentageBonus
+            : 0;
+        this.compare.aCalculatedWinningPercentageReg = `%${(teamAWinningPercentage * 100).toFixed(2)}`;
+        this.compare.bAdvAudit['calculatedWinPerReg'] = diff < 0
+            ? winningPercentageBonus
+            : 0;
+        this.compare.bCalculatedWinningPercentageReg = `%${(teamBWinningPercentage * 100).toFixed(2)}`;
     }
 
     assignStreakAdv() {
@@ -276,8 +286,18 @@ class Helper {
     }
 
     calculateWinningPercentage(teamData) {
-        return Math.pow(teamData.goalsScored, 2) /
-            (Math.pow(teamData.goalsScored, 2) + Math.pow(teamData.goalsAgainst, 2));
+        let goalsForPerGame = teamData.goalsScored / teamData.gamesPlayed;
+        let goalsAgainstPerGame = teamData.goalsAgainst / teamData.gamesPlayed;
+
+        return Math.pow(goalsForPerGame, 2) /
+            (Math.pow(goalsForPerGame, 2) + Math.pow(goalsAgainstPerGame, 2));
+    }
+
+    calculateWinningPercentageViaRegression(teamData) {
+        let goalsForPerGame = teamData.goalsScored / teamData.gamesPlayed;
+        let goalsAgainstPerGame = teamData.goalsAgainst / teamData.gamesPlayed;
+
+        return 0.500 + ((0.1457 * goalsForPerGame) - (0.1457 * goalsAgainstPerGame));
     }
 
     findTeamStats(abbv) {

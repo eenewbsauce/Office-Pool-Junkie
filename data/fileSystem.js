@@ -43,9 +43,9 @@ class Stats {
 class Selections {
   constructor() {
     try {
-      this.selections = fs.readFileSync(
-        path.resolve(__dirname, 'store/selectionData.json')
-      );
+      this.selections = JSON.parse(fs.readFileSync(
+        path.resolve(__dirname, 'store/selectionData.json'), 'utf8'
+      ));
     } catch (err) {
       this.selections = {};
     }
