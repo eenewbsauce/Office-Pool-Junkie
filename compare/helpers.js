@@ -45,7 +45,8 @@ const abbvMap = {
   'NJ': 'NJD',
   'CLB': 'CBJ',
   'WAS': 'WSH',
-  'MON': 'MTL'
+  'MON': 'MTL',
+  'VEG': 'VGK'
 };
 
 let abbvReverseMap = {};
@@ -92,6 +93,9 @@ class Helper {
         let teamB = this.findTeamInStandings(abbvB);
         let teamAFullStats = this.findTeamStats(abbvA);
         let teamBFullStats = this.findTeamStats(abbvB);
+
+        console.log(teamA)
+        console.log(teamB)        
 
         this.compare = {
             a: teamA,

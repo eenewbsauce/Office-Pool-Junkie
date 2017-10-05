@@ -47,7 +47,7 @@ class Pages {
         });
 
         let cleanPools = R.compose(
-            R.sortWith([R.descend(R.prop('week'))]),
+            R.sortWith([R.ascend(R.prop('week'))]),
             R.filter(p => {
               return !R.isNil(p.week) && typeof p.week === 'number';
             })
