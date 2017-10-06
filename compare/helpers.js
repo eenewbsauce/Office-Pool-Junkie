@@ -94,18 +94,17 @@ class Helper {
         let teamAFullStats = this.findTeamStats(abbvA);
         let teamBFullStats = this.findTeamStats(abbvB);
 
-        console.log(teamA)
-        console.log(teamB)        
-
         this.compare = {
             a: teamA,
             aFullStats: teamAFullStats,
             aAdvAudit: {},
             aAdv: 0,
+            aAbbr: abbvA,
             b: teamB,
             bFullStats: teamBFullStats,
             bAdvAudit: {},
-            bAdv: 0
+            bAdv: 0,
+            bAbbr: abbvB,
         };
 
         this.algorithmSteps.forEach(step => {
@@ -227,8 +226,8 @@ class Helper {
     }
 
     assignPenaltyKillAdv() {
-        let diff = this.compare.aFullStats.pkPctg - this.compare.bFullStats.pkPctg;
-
+        let diff = (this.compare.aFullStats.pkPctg || 0) - (this.compare.bFullStats.pkPctg || 0);
+        
         this.compare.aAdvAudit['pk'] = diff > 0
             ? pkBonus
             : 0;
@@ -238,7 +237,7 @@ class Helper {
     }
 
     assignPowerPlayAdv() {
-        let diff = this.compare.aFullStats.ppPctg - this.compare.bFullStats.ppPctg;
+        let diff = (this.compare.aFullStats.ppPctg || 0) - (this.compare.bFullStats.ppPctg || 0);
 
         this.compare.aAdvAudit['pp'] = diff > 0
             ? ppBonus
@@ -306,8 +305,12 @@ class Helper {
 
     findTeamStats(abbv) {
         abbv = this.abbvMap.hasOwnProperty(abbv)
-            ? abbvMap[abbv]
+            ? this.abbvMap[abbv]
             : abbv;
+
+        if (this.stats.teams[abbv] === undefined) {
+          console.log(`missing stats for: ${abbv}`)
+        }
 
         return this.stats.teams[abbv];
     }

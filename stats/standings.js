@@ -4,7 +4,7 @@ const R         = require('ramda');
 function standings() {
     return new Promise((resolve, reject) => {
         request({
-            url: 'https://statsapi.web.nhl.com/api/v1/standings?expand=standings.record,standings.team,standings.division,standings.conference,team.schedule.next,team.schedule.previous&season=20162017',
+            url: 'https://statsapi.web.nhl.com/api/v1/standings?expand=standings.record,standings.team,standings.division,standings.conference,team.schedule.next,team.schedule.previous&season=20172018',
             method: 'GET',
             json: true
         }, (err, res, body) => {
