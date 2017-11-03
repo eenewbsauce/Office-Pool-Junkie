@@ -42,14 +42,15 @@ class Pages {
 
           pools.push({
               link: cells.eq(0).find('a.tooltip').attr('href'),
-              week: parseInt(cells.eq(1).text().split(':')[0].split(' ')[1]) || undefined
+              week: parseInt(cells.eq(1).text().split(':')[0].split(' ')[1]) || undefined,
+              isComplete: cells.eq(1).text().indexOf('Pool Over') !== -1
           });
         });
 
         let cleanPools = R.compose(
             R.sortWith([R.ascend(R.prop('week'))]),
             R.filter(p => {
-              return !R.isNil(p.week) && typeof p.week === 'number';
+              return !p.isComplete && (!R.isNil(p.week) && typeof p.week === 'number');
             })
         )(pools);
 
