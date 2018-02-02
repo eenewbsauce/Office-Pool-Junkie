@@ -43,7 +43,7 @@ class Pages {
           pools.push({
               link: cells.eq(0).find('a.tooltip').attr('href'),
               week: parseInt(cells.eq(1).text().split(':')[0].split(' ')[1]) || undefined,
-              isComplete: cells.eq(1).text().indexOf('Pool Over') !== -1
+              isComplete: cells.eq(1).text().indexOf('Pool Over') !== -1 || cells.eq(1).text().indexOf('No Games') !== -1
           });
         });
 
