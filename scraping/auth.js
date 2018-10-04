@@ -9,7 +9,7 @@ class Auth {
     login() {
         console.log('logging in');
         return new Promise((resolve, reject) => {
-            cookieJar.setCookie('PHPSESSID=kculg3ick5giqmc04ge423mph0');
+            cookieJar.setCookie('PHPSESSID=oqre8gp908fg44bu9sn71rcoi7');
             return resolve({message: 'logged in!'});
 
             request({
@@ -26,6 +26,7 @@ class Auth {
 
                 let cookie = res.headers['set-cookie'][0].split(';')[0];
 
+                console.log(res.headers['set-cookie'])
                 console.log(cookie)
 
                 cookieJar.setCookie(cookie);

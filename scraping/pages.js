@@ -38,10 +38,11 @@ class Pages {
                 let pools = [];
 
                 rows.each((i, el) => {
-                    let weekParts = $(el).find('.card-body .col-md-auto.text-nowrap p a').eq(0).text().split(':');
+                    let weekParts = $(el).find('.card-body .col-md-auto.text-nowrap p').eq(0).text().split(':');
                     let number = weekParts[0].split(' ')[1];
                     let status = weekParts[1].trim().toLowerCase();
                     let complete = status === 'pool over' || status === 'no games';
+
 
                     pools.push({
                         link: $(el).find('h4.card-title a').attr('href'),
@@ -50,6 +51,7 @@ class Pages {
                     });
                 });
 
+                console.dir(pools)
 
                 let cleanPools = R.compose(
                     R.sortWith([R.ascend(R.prop('week'))]),

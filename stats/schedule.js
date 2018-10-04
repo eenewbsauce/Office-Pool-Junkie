@@ -3,7 +3,7 @@ const R         = require('ramda');
 
 function schedule() {
     return new Promise((resolve, reject) => {
-        let startDate = '2017-10-06';
+        let startDate = '2018-10-04';
         let endDate = new Date().toISOString().split('T')[0];
 
         request({
