@@ -13,6 +13,7 @@ const options = require("../options").parse();
 
 class Pages {
   setPoolId(pool) {
+      console.log(pool)
     this.poolId = pool.link.split("=")[1];
   }
 
