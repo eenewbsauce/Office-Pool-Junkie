@@ -51,7 +51,7 @@ class Pages {
             let complete = status === "pool over" || status === "no games";
             let title = $(el).find("h4.card-title a");
 
-            if (title.text().indexOf("NHL") !== -1) {
+            if (title.text().toLowerCase().indexOf("nhl") !== -1) {
               pools.push({
                 link: title.attr("href"),
                 week: parseInt(number),
